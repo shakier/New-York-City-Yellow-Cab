@@ -21,4 +21,41 @@ For the preliminrary stage, I use a sample of both datasets for quick analysis. 
 ## 4. Potential problems with the data
 I realize that the majority of New Yorkers may use public transit such as subways and bus instead of cabs for daily commute. Even for the people who use hailing service, yellow cabs do not tell the entire story. There are For-Hire vehicles and UBER cabs. Nevertheless, as of August 2016, yellow cab daily trip number still almost doubles UBER (source: http://toddwschneider.com/posts/taxi-uber-lyft-usage-new-york-city/). The yellow cab data will tell a rather intersting and different story from public transit data about the commute pattern of New Yorkers.
 
+# 5. Data Preparation
+```{r echo=FALSE, message=FALSE, warning=FALSE, load_and_transform_taxi_data}
+#subset data within sample date range 
+taxi_sample <- subset(df_taxi, day(as.POSIXlt(df_taxi$tpep_pickup_datetime, format = "%Y-%m-%d"))>=24 & day(as.POSIXlt(df_taxi$tpep_pickup_datetime, format = "%Y-%m-%d"))<= 30 )
+
+#drop trips with invalid coordinates
+taxi_sample <- taxi_sample[!(taxi_sample$pickup_longitude == 0 | taxi_sample$pickup_latitude == 0 | taxi_sample$dropoff_longitude ==0 | taxi_sample$dropoff_latitude ==0), ]
+
+#create a unique ID for each ride
+taxi_sample$RideID <- seq.int(nrow(taxi_sample))
+
+#add variables showing time
+taxi_sample$hour <- hour(as.POSIXlt(taxi_sample$tpep_pickup_datetime, format = "%Y-%m-%d %H:%M:%S"))
+taxi_sample$wday <- wday(as.POSIXlt(taxi_sample$tpep_pickup_datetime, format = "%Y-%m-%d %H:%M:%S"))
+taxi_sample$minute <- minute(as.POSIXlt(taxi_sample$tpep_pickup_datetime, format = "%Y-%m-%d %H:%M:%S"))
+
+#used Python to process data; refer to attached Python codes
+#subset data with keys of interest
+merge_nodes_tags_subset <- merge_nodes_tags[merge_nodes_tags$key %in% c("amenity", "building", "cemetery", "county", "crossing", "cuisine", "denomination", "emergency", "historic", "historical", "history", "hotel", "housenumber", "junction", "highway", "name", "natural", "outdoor_seating", "parking", "park_ride", "public_transport", "religion", "shop", "street", "tourism", "postcode", "postal_code"), ]
+
+#sample data for only amenities with their names
+merge_nodes_tags_subset2 <- subset(merge_nodes_tags_subset, merge_nodes_tags_subset$key=="name"|merge_nodes_tags_subset$key=="amenity")
+
+#get all amenity coordinates
+amenity_coord <- subset(merge_nodes_tags_subset2, merge_nodes_tags_subset2$key =="amenity")
+write.csv(amenity_coord, file = "amentiy_coord_range.csv")
+
+#get all restaurant coordinates
+restaurant_coord <- subset(amenity_coord, amenity_coord$value == "restaurant")
+restaurant_coord <- merge(restaurant_coord, nodes_name, by = "id")
+write.csv(restaurant_coord, file = "restaurant_coord.csv")
+
+#get all theatre coordinates
+theater_coord <- subset(amenity_coord, amenity_coord$value == "theatre")
+theater_coord <- merge(theater_coord, nodes_name, by = "id")
+write.csv(theater_coord, file = "theatre_coord.csv")
+```
 

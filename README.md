@@ -1,7 +1,7 @@
 
 # Moving the City with Yellow Cabs
 ## Qianqi Kay Shen
-## date: "October 28, 2016"
+## October 28, 2016
 
 ## 1. Summary
 

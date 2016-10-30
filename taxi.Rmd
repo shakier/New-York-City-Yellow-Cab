@@ -1,0 +1,372 @@
+---
+title: "Moving the City with Yellow Cabs"
+author: "Qianqi Kay Shen"
+date: "October 28, 2016"
+output: html_document
+---
+```{r setup, include=FALSE}
+knitr::opts_chunk$set(echo = TRUE)
+```
+#1. Summary
+
+This project tells a story about New Yorkers' moving abouts with the Yellow Cab data. As of March 2014, 51,398 men and women licensed to drive medallion taxicabs (a.k.a, yellow cabs) in New York City. Every day, 600,000 people take a cab, accounting to 236 million in a year (reference: New York City Taxi and Limousine Commission). The yellow cabs provide a most convinient option for New Yorkers (and visitors) to go around the city. I ask a series of questions to find out interesting facts about the pattern of New Yorkers' cab usage. 
+
+#2. Questions
+
+The main question that is driving this project is: How do New Yorkers use yellow cabs? I wonder: Who are they? When and where do they hail a cab? Where do they go? For example, do people take a cab to work? Where do they dine out on weekday nights and Friday nights? Do they go different places after work on weekdays and on weekends? Where do the opera-goers go after the show? Who tip the most, bigger group of young people going around the city or people who live in one of the wealthiest neighborhoods? 
+
+#3. Data
+I use the yellow taxi trip record data from New York City Taxi and Limousine Commission (http://www.nyc.gov/html/tlc/html/about/trip_record_data.shtml) for trip data. This data contains information including trip pick-up and drip-off time and location coordinates, trip distances, fares, tips, and so on. 
+
+In addition, for coordinate location information, I use OpenStreetMap New York City XML OSM data (http://metro.teczno.com/#new-york). After cleaning up the data, I constructed a  dataset contains main description information about each locality nodes (represented by a longitude-latitude pair), including what business it is in (be it school, theatre, restaurants, and so on) and the name of the locality.
+
+For the preliminrary stage, I use a sample of both datasets for quick analysis. For yellow taxi trips, the sample contains all trip information from 2016-01-24 to 2016-01-30. For OSM data, I focus on theatre data. 
+
+#4. Potential problems with the data
+I realize that the majority of New Yorkers may use public transit such as subways and bus instead of cabs for daily commute. Even for the people who use hailing service, yellow cabs do not tell the entire story. There are For-Hire vehicles and UBER cabs. Nevertheless, as of August 2016, yellow cab daily trip number still almost doubles UBER (source: http://toddwschneider.com/posts/taxi-uber-lyft-usage-new-york-city/). The yellow cab data will tell a rather intersting and different story from public transit data about the commute pattern of New Yorkers.
+
+#5. Data Preparation
+```{r echo=FALSE, message=FALSE, warning=FALSE, packages}
+library(lubridate)
+library(fields)
+library(sp)
+library(maptools)
+library(lattice)
+library(xtable)
+library(ggplot2)
+library(foreign)
+library(stringr)
+library(lubridate)
+library(dplyr)
+library(xtable)
+library(scales)
+library(RColorBrewer)
+library(grid)
+library(ggmap)
+library(gridExtra)
+```
+
+```{r echo=FALSE, message=FALSE, warning=FALSE, load_and_transform_taxi_data}
+setwd("/Users/shakier/Documents/dataincubator/taxi")
+df_taxi <- read.csv("yellow_tripdata_2016-01.csv")
+#subset data within sample date range 
+taxi_sample <- subset(df_taxi, day(as.POSIXlt(df_taxi$tpep_pickup_datetime, format = "%Y-%m-%d"))>=24 & day(as.POSIXlt(df_taxi$tpep_pickup_datetime, format = "%Y-%m-%d"))<= 30 )
+#drop trips with invalid coordinates
+taxi_sample <- taxi_sample[!(taxi_sample$pickup_longitude == 0 | taxi_sample$pickup_latitude == 0 | taxi_sample$dropoff_longitude ==0 | taxi_sample$dropoff_latitude ==0), ]
+
+#create a unique ID for each ride
+taxi_sample$RideID <- seq.int(nrow(taxi_sample))
+
+#add variables showing time
+taxi_sample$hour <- hour(as.POSIXlt(taxi_sample$tpep_pickup_datetime, format = "%Y-%m-%d %H:%M:%S"))
+taxi_sample$wday <- wday(as.POSIXlt(taxi_sample$tpep_pickup_datetime, format = "%Y-%m-%d %H:%M:%S"))
+taxi_sample$minute <- minute(as.POSIXlt(taxi_sample$tpep_pickup_datetime, format = "%Y-%m-%d %H:%M:%S"))
+
+write.csv(taxi_sample, file = "taxi_sample.csv")
+```
+
+```{r echo=FALSE, message=FALSE, warning=FALSE, load_and_transform_osm_data}
+#used Python to process data; refer to attached Python codes
+nodes <- read.csv("nodes.csv")
+nodes_tag <- read.csv("nodes_tags.csv")
+ways <- read.csv("ways.csv")
+ways_tags <- read.csv("ways_tags.csv")
+ways_nodes <- read.csv("ways_nodes.csv")
+
+merge_ways_ways_tag <- merge(ways_nodes, ways_tags, by = "id" )
+colnames(merge_ways_ways_tag)[1:2] <- c("way_id", "id")
+
+merge_nodes_tags <- merge(nodes, nodes_tag, by = "id", all = TRUE)
+table(merge_nodes_tags$key)
+
+#subset data with keys of interest
+merge_nodes_tags_subset <- merge_nodes_tags[merge_nodes_tags$key %in% c("amenity", "building", "cemetery", "county", "crossing", "cuisine", "denomination", "emergency", "historic", "historical", "history", "hotel", "housenumber", "junction", "highway", "name", "natural", "outdoor_seating", "parking", "park_ride", "public_transport", "religion", "shop", "street", "tourism", "postcode", "postal_code"), ]
+
+#sample data for only amenities with their names
+merge_nodes_tags_subset2 <- subset(merge_nodes_tags_subset, merge_nodes_tags_subset$key=="name"|merge_nodes_tags_subset$key=="amenity")
+
+#create coordinate ranges for each node
+coord_range <- function(point_lon, point_lat){
+  point_lon <- as.numeric(point_lon)
+  point_lat <- as.numeric(point_lat)
+  node_lon_min <- point_lon - 0.00001
+  node_lon_max <- point_lon + 0.00001
+  node_lat_min <- point_lat - 0.00001
+  node_lat_max <- point_lat + 0.00001
+  return (c(node_lon_min, node_lon_max, node_lat_min, node_lat_max))
+}
+
+merge_nodes_tags_subset2 <- cbind(merge_nodes_tags_subset2, t(apply(merge_nodes_tags_subset2, 1, function(params)coord_range(params["lon"], params["lat"]))))
+
+colnames(merge_nodes_tags_subset2)[12:15] <- c("lon_min", "lon_max", "lat_min", "lat_max")
+
+write.csv(merge_nodes_tags_subset2, file = "nodes_tags_coord_range.csv")
+
+#get node names
+nodes_name<-read.csv("nodes_tags_coord_range.csv")
+nodes_name <- subset(nodes_name, nodes_name$key == "name" )
+write.csv(nodes_name, file = "nodes_name.csv")
+
+#get all amenity coordinates
+amenity_coord <- subset(merge_nodes_tags_subset2, merge_nodes_tags_subset2$key =="amenity")
+write.csv(amenity_coord, file = "amentiy_coord_range.csv")
+
+#get all restaurant coordinates
+restaurant_coord <- subset(amenity_coord, amenity_coord$value == "restaurant")
+restaurant_coord <- merge(restaurant_coord, nodes_name, by = "id")
+write.csv(restaurant_coord, file = "restaurant_coord.csv")
+
+#get all theatre coordinates
+theater_coord <- subset(amenity_coord, amenity_coord$value == "theatre")
+theater_coord <- merge(theater_coord, nodes_name, by = "id")
+write.csv(theater_coord, file = "theatre_coord.csv")
+```
+
+#6. Priliminary Analysis:
+## 6.1. Data descriptions
+
+There are 2,323,898 trip records in the data sample, which cover all trips from 2016-01-24 to 2016-01-30. Counting trips by weekdays, we find out that the trip numbers increase sequentially from Sunday to Saturday. Sunday has the least trip number, which is 157,344, and Saturday has the largest trip number, 427,577.
+
+```{r echo=FALSE, message=FALSE, warning=FALSE, data_description1}
+#plot number of trips by weekdays
+taxi_sample.count_by_wday <- taxi_sample %>%
+  group_by(wday) %>%
+  summarise(n = n()) %>%
+  arrange(wday)
+
+trip_by_weekday<-ggplot(aes(x = factor(wday), y = n), data = taxi_sample.count_by_wday) + geom_bar(stat = "identity", color = "red", fill = "red", alpha = 0.5) + coord_cartesian(ylim = c(0,500000))+ scale_x_discrete(labels=c("1" = "Sunday", "2" = "Monday", "3" = "Tuesday", "4" = "Wednesday", "5" = "Thursday", "6" = "Friday", "7" = "Saturday")) + labs(x = "Weekdays", y = "number of trips", title = "Number of Trips by Weekdays") +geom_text(aes(label=comma(n)), vjust=-0.25, size = 3)
+
+png("trip_by_weekday.png", w=800, h=600)
+trip_by_weekday
+dev.off()
+```
+
+Looking the data by hours, we find out that there are two peak hours. Unprisingly, they coincide with commute hours, 8 in the morning and 19 in the evening. Interestingly, more people take a cab to go home than go to work.
+
+```{r echo=FALSE, message=FALSE, warning=FALSE, data_description2}
+#plot number of trips by hour
+taxi_sample.count_by_hour <- taxi_sample %>%
+  group_by(hour) %>%
+  summarise(n = n()) %>%
+  arrange(hour)
+
+trip_by_hour<-ggplot(aes(x = factor(hour), y = n), data = taxi_sample.count_by_hour) + geom_bar(stat = "identity", color = "red", fill = "red", alpha = 0.5) + coord_cartesian(ylim = c(0,200000)) + labs(x = "Hours", y = "Number of trips", title = "Number of Trips by Hours") +geom_text(aes(label=comma(n)), vjust=-0.25, size = 2)
+
+png("trip_by_hour.png", w=800, h=600)
+trip_by_hour
+dev.off()
+```
+
+I also plotted the trip number by hours by weekdays. It turns out that New Yorkers do take cabs to work. As the week goes by, more and more commuters choose to go to work and go home by cab. Friday night is the go out night. Cabs going around town until early morning Saturday. And the fun continues throughout Saturday. However, the city quiets down from Sunday early morning--significantly fewer people go out on cabs throughout Sunday. 
+
+```{r echo=FALSE, message=FALSE, warning=FALSE, data_description3}
+#plot number of trips by hour by weekdays
+taxi_sample.count_by_Sunday_hour <- subset(taxi_sample, taxi_sample$wday == 1) %>%
+  group_by(hour) %>%
+  summarise(n = n()) %>%
+  arrange(hour)
+
+p_Sun<-ggplot(aes(x = factor(hour), y = n), data = taxi_sample.count_by_Sunday_hour) + geom_bar(stat = "identity", color = "red", fill = "red", alpha = 0.5) + coord_cartesian(ylim = c(0,30000)) + labs(x = "Sunday", y = "Number of trips", title = "Number of Trips by Hours") +geom_text(aes(label=comma(n)), vjust=-0.25, size = 2)
+
+taxi_sample.count_by_Monday_hour <- subset(taxi_sample, taxi_sample$wday == 2) %>%
+  group_by(hour) %>%
+  summarise(n = n()) %>%
+  arrange(hour)
+
+p_Mon <- ggplot(aes(x = factor(hour), y = n), data = taxi_sample.count_by_Monday_hour) + geom_bar(stat = "identity", color = "red", fill = "red", alpha = 0.5) + coord_cartesian(ylim = c(0,30000)) + labs(x = "Monday", y = "Number of trips") +geom_text(aes(label=comma(n)), vjust=-0.25, size = 2)
+
+taxi_sample.count_by_Tuesday_hour <- subset(taxi_sample, taxi_sample$wday == 3) %>%
+  group_by(hour) %>%
+  summarise(n = n()) %>%
+  arrange(hour)
+
+p_Tue <- ggplot(aes(x = factor(hour), y = n), data = taxi_sample.count_by_Tuesday_hour) + geom_bar(stat = "identity", color = "red", fill = "red", alpha = 0.5) + coord_cartesian(ylim = c(0,30000)) + labs(x = "Tuesday", y = "Number of trips") +geom_text(aes(label=comma(n)), vjust=-0.25, size = 2)
+
+taxi_sample.count_by_Wednesday_hour <- subset(taxi_sample, taxi_sample$wday == 4) %>%
+  group_by(hour) %>%
+  summarise(n = n()) %>%
+  arrange(hour)
+
+p_Wed <- ggplot(aes(x = factor(hour), y = n), data = taxi_sample.count_by_Wednesday_hour) + geom_bar(stat = "identity", color = "red", fill = "red", alpha = 0.5) + coord_cartesian(ylim = c(0,30000)) + labs(x = "Wednesday", y = "Number of trips") +geom_text(aes(label=comma(n)), vjust=-0.25, size = 2)
+
+taxi_sample.count_by_Thursday_hour <- subset(taxi_sample, taxi_sample$wday == 5) %>%
+  group_by(hour) %>%
+  summarise(n = n()) %>%
+  arrange(hour)
+
+p_Thur <- ggplot(aes(x = factor(hour), y = n), data = taxi_sample.count_by_Thursday_hour) + geom_bar(stat = "identity", color = "red", fill = "red", alpha = 0.5) + coord_cartesian(ylim = c(0,30000)) + labs(x = "Thursday", y = "Number of trips") +geom_text(aes(label=comma(n)), vjust=-0.25, size = 2)
+
+taxi_sample.count_by_Friday_hour <- subset(taxi_sample, taxi_sample$wday == 6) %>%
+  group_by(hour) %>%
+  summarise(n = n()) %>%
+  arrange(hour)
+
+p_Fri <- ggplot(aes(x = factor(hour), y = n), data = taxi_sample.count_by_Wednesday_hour) + geom_bar(stat = "identity", color = "red", fill = "red", alpha = 0.5) + coord_cartesian(ylim = c(0,30000)) + labs(x = "Friday", y = "Number of trips") +geom_text(aes(label=comma(n)), vjust=-0.25, size = 2)
+
+taxi_sample.count_by_Saturday_hour <- subset(taxi_sample, taxi_sample$wday == 7) %>%
+  group_by(hour) %>%
+  summarise(n = n()) %>%
+  arrange(hour)
+
+p_Sat <- ggplot(aes(x = factor(hour), y = n), data = taxi_sample.count_by_Saturday_hour) + geom_bar(stat = "identity", color = "red", fill = "red", alpha = 0.5) + coord_cartesian(ylim = c(0,30000)) + labs(x = "Saturday", y = "Number of trips") +geom_text(aes(label=comma(n)), vjust=-0.25, size = 2)
+
+trip_by_weekday_hour<-grid.arrange(p_Sun, p_Mon, p_Tue, p_Wed, p_Thur, p_Fri, p_Sat, ncol=2)
+png("trip_by_weekday_hour.png", w=800, h=600)
+trip_by_weekday_hour
+dev.off()
+
+```
+
+The OSM data has 5,324,910 unique node ID's. Each node has coordinates longitude and latitude. For each node, the data provides different key and value pairs as description of that node. For example, a node may have a key "street" with a "value" showing the name of the street where the node is at. A node may also have a key "amenity" with a "value" showing what kind of amenity this node is. The top 20 keys are shown below.
+
+```{r echo=FALSE, message=FALSE, warning=FALSE, data_description4}
+
+length(unique(merge_nodes_tags$id))
+
+merge_nodes_tags.count <- merge_nodes_tags %>%
+  group_by(key) %>%
+  summarise(n = n()) %>%
+  arrange(desc(n))
+
+head(merge_nodes_tags.count, n =20)
+```
+
+For preliminary analysis, I only focus on amenity data. For the bigger project, however, other keys, such as parking, cuisine, religion, and so on, will also provide interesting geographical information. The top amenity values are shown below. Bicycle parking has the highest hit, 4,794. Then it is school, 4,525, place of worship, 3,879, and restaurant, 1,186. In this primary stage, I will use restaurant data to show how I will use this data, combined with the taxi data, to do analysis. In the future, I may also look at other interesting values, such as schools, parking, and bars.
+
+```{r echo=FALSE, message=FALSE, warning=FALSE, data_description5}
+amenity_coord.count <- amenity_coord %>%
+  group_by(value) %>%
+  summarise(n = n()) %>%
+  arrange(desc(n))
+
+head(amenity_coord.count, n =20)
+```
+
+## 6.2. Data plotting
+
+This plot uses all the trips as inputs, and it basically becomes a road map of New York City area! As seen from the map, most cab use concentrates in Manhattan, and then the downtown areas in Queens and Brooklyn. Very little cab use in Bronx. In addition, we notice there is a cab line along a subway line (probably E) connecting to JFK Airport. It's very likely that people coming from and going to airport combine their trips with taxi and subways! 
+
+```{r echo=FALSE, message=FALSE, warning=FALSE, data_plotting1}
+
+min_lat <- 40.5774
+max_lat <- 40.9176
+min_lon <- -74.15
+max_lon <- -73.7004
+
+plot_allpickup <- ggplot(taxi_sample, aes(x=pickup_longitude, y=pickup_latitude)) +
+            geom_point(size=0.02,  color= "red", alpha = 0.2) +
+            scale_x_continuous(limits=c(min_lon, max_lon)) +
+            scale_y_continuous(limits=c(min_lat, max_lat))+labs(x = "Taxi Pickups")+theme(axis.title.y=element_blank(), axis.title.x = element_text(size = rel(1)))
+png("nyc-taxi-pickup.png", w=600, h=600)
+plot_allpickup 
+dev.off()
+
+plot_alldropoff <- ggplot(taxi_sample, aes(x=dropoff_longitude, y=dropoff_latitude)) +
+            geom_point(size=0.02,  color= "red", alpha = 0.2) +
+            scale_x_continuous(limits=c(min_long, max_long)) +
+            scale_y_continuous(limits=c(min_lat, max_lat))+labs(x = "Taxi Dropoffs")+theme(axis.title.y=element_blank(), axis.title.x = element_text(size = rel(1))) 
+png("nyc-taxi-dropoff.png", w=600, h=600)
+plot_alldropoff
+dev.off()
+```
+
+Let's see where the cab-taking working New Yorkers are coming from and going to work. Manhattan is still the place where more cab use is in. However, pickups are more concentrating on the east side, while dropoffs are all over Manhattan. In addition, dropoffs are more sparse, especially in Queens and Brooklyn areas. 
+
+```{r echo=FALSE, message=FALSE, warning=FALSE, data_plotting2}
+plot_workday_pickup <- ggplot(subset(taxi_sample, taxi_sample$hour>=8&taxi_sample$hour<=9&taxi_sample$wday>=2&taxi_sample$wday<=6), aes(x=pickup_longitude, y=pickup_latitude)) +
+            geom_point(size=0.02,  color= "red", alpha = 0.2) +
+            scale_x_continuous(limits=c(min_long, max_long)) +
+            scale_y_continuous(limits=c(min_lat, max_lat))+xlab("Taxi Workday Morning Pickups")+theme(axis.title.y=element_blank(), axis.title.x = element_text(size = rel(1)))
+png("nyc-taxi-morning-pickup.png", w=600, h=600)
+plot_workday_pickup 
+dev.off()
+
+plot_workday_dropoff <- ggplot(subset(taxi_sample, taxi_sample$hour>=8&taxi_sample$hour<=9&taxi_sample$wday>=2&taxi_sample$wday<=6), aes(x=dropoff_longitude, y=dropoff_latitude)) +
+            geom_point(size=0.02,  color= "red", alpha = 0.2) +
+            scale_x_continuous(limits=c(min_long, max_long)) +
+            scale_y_continuous(limits=c(min_lat, max_lat))+labs(x ="Taxi Workday Morning Dropoffs")+theme(axis.title.y=element_blank(), axis.title.x = element_text(size = rel(1)))
+png("nyc-taxi-morning-dropoff.png", w=600, h=600)
+plot_workday_dropoff
+dev.off()
+```
+
+Where do people go out on Friday night? To my surprise, the dropoff locations do not seem perfectly co-locate with the restaurants. This could be due to that the OSM data is incomplete. Or, people simply do not take cabs to restaurants. But anyway, this will need further investigations, including, but not limited to, analyzing data from other weeks. 
+
+```{r echo=FALSE, message=FALSE, warning=FALSE,  data_plotting3}
+
+m <- get_map(location = c(lon = (min_lon+max_lon)/2, lat = (min_lat+max_lat)/2),zoom = 12, maptype='toner', source="stamen")
+
+basemap <- ggmap(m)
+
+Friday_night1 <- basemap + geom_point(data=subset(taxi_sample, taxi_sample$hour>=18 & taxi_sample$hour<=20&taxi_sample$wday==6), aes(x=dropoff_longitude, y=dropoff_latitude), size=0.02,  color= "red", alpha = 0.05) +labs(x ="Friday Night Dropoffs")+theme(axis.title.y=element_blank(), axis.title.x = element_text(size = rel(1)))+geom_point(data=restaurant_coord, aes(x=lon.x,y=lat.x),size = 0.5, alpha = 0.3, color = "blue")
+
+Friday_night_leveled <- basemap+stat_density2d(aes(x = dropoff_longitude, y = dropoff_latitude, fill= ..level..), data=subset(taxi_sample, taxi_sample$hour>=18 & taxi_sample$hour<=20&taxi_sample$wday==6),geom="polygon", alpha=0.3)
+Friday_night_leveled  <- Friday_night_leveled  + scale_fill_gradient(low = "yellow", high = "red")+geom_point(data=restaurant_coord, aes(x=lon.x,y=lat.x),size = 0.5, alpha = 0.3, color = "blue")
+
+png("Friday_night_goout1.png", w=600, h=600)
+Friday_night1
+dev.off()
+
+png("Friday_night_goout2.png", w=600, h=600)
+Friday_night_leveled 
+dev.off()
+```
+
+Then, would New Yorkers be taking cabs in late Friday night? Yes, more New Yorkers are taking cabs after 10 o'clock Friday night. 
+```{r echo=FALSE, message=FALSE, warning=FALSE,  data_plotting4}
+
+Friday_night2 <- basemap + geom_point(data=subset(taxi_sample, taxi_sample$hour>=22&taxi_sample$wday==6), aes(x=pickup_longitude, y=pickup_latitude), size=0.02,  color= "red", alpha = 0.05) +labs(x ="Friday Late Night Pickups")+theme(axis.title.y=element_blank(), axis.title.x = element_text(size = rel(1)))+geom_point(data=restaurant_coord, aes(x=lon.x,y=lat.x),size = 0.5, alpha = 0.3, color = "blue")
+
+Friday_night2_leveled <- basemap+stat_density2d(aes(x = pickup_longitude, y = pickup_latitude, fill= ..level..), data=subset(taxi_sample, taxi_sample$hour>=22&taxi_sample$wday==6),geom="polygon", alpha=0.3)
+Friday_night2_leveled  <- Friday_night2_leveled  + scale_fill_gradient(low = "yellow", high = "red")+geom_point(data=restaurant_coord, aes(x=lon.x,y=lat.x),size = 0.5, alpha = 0.3, color = "blue")
+
+png("Friday_late_night_pickup.png", w=600, h=600)
+Friday_night2
+dev.off()
+
+png("Friday_late_night_pickup2.png", w=600, h=600)
+Friday_night2_leveled 
+dev.off()
+```
+
+Now, let's take a look at the theatre district on Friday night. The map shows where people go after leaving the theatre district on Friday night. Most trips are in Manhattan. Very few go to Queens. And even fewer to other areas. But the data points are too small at this point, so I will need more data to investigate this question. 
+
+```{r echo=FALSE, message=FALSE, warning=FALSE,  data_plotting5}
+theater_district_min_lat <- 40.753769
+theater_district_max_lat <- 40.764106
+theater_district_min_lon <- -73.985238
+theater_district_max_lon <- -73.984851
+
+theatre_goers_friday_night <- basemap + geom_point(data=subset(taxi_sample, taxi_sample$hour>=22&taxi_sample$hour<=23&taxi_sample$wday ==6 & (taxi_sample$pickup_longitude >=-73.985238 & taxi_sample$pickup_longitude<=-73.984851) & (taxi_sample$pickup_latitude >=40.753769 & taxi_sample$pickup_latitude <= 40.764106)), aes(x=dropoff_longitude, y=dropoff_latitude), size=0.5,  color= "red", alpha = 0.5) 
+png("theatre_goers_friday_night.png", w=600, h=600)
+theatre_goers_friday_night 
+dev.off()
+```
+
+Who pay the highest tip? In general, people take a cab within Manhattan tip higher. High tippers tend to be those who go to Times Square and Midtown. They could be visitors or financial bankers. Besides, wealthy people living in Upper East seem to tip more as well.
+
+```{r echo=FALSE, message=FALSE, warning=FALSE,  data_plotting6}
+taxi_sample$tip_percentage<-ifelse(taxi_sample$fare_amount!=0 & !is.na(taxi_sample$tip_amount) & !is.na(taxi_sample$fare_amount), taxi_sample$tip_amount/taxi_sample$fare_amount, NA)
+
+summary(taxi_sample$tip_percentage)
+
+quantile(subset(taxi_sample$tip_percentage, !is.na(taxi_sample$tip_percentage)), 0.9)
+
+
+plot_high_tip <- basemap+ geom_point(data = subset(taxi_sample,  taxi_sample$hour>=19 & taxi_sample$hour<=20 &taxi_sample$tip_percentage>=0.2729412), aes(x=dropoff_longitude, y=dropoff_latitude), size=0.02, color= "red", alpha = 0.2) +
+labs(x = "High Tips Dropoffs")+theme(axis.title.y=element_blank(), axis.title.x = element_text(size = rel(1)))
+png("plot_high_tip.png", w=600, h=600)
+plot_high_tip 
+dev.off()
+
+
+high_tip_leveled <- basemap+stat_density2d(aes(x=dropoff_longitude, y=dropoff_latitude, fill= ..level..), data=subset(taxi_sample,  taxi_sample$hour>=19 & taxi_sample$hour<=20 &taxi_sample$tip_percentage>=0.2729412),geom="polygon", alpha=0.3)
+high_tip_leveled  <- high_tip_leveled  + scale_fill_gradient(low = "yellow", high = "red")
+png("plot_high_tip2.png", w=600, h=600)
+high_tip_leveled 
+dev.off()
+
+```
+
+# 7. Conclusion
+This exciting data exploratory project targets the audiences who are interested in relating urban life and traffic movements with their businesses. It could be cab hailing businesses, or businesses picking up the best location for its enterprise. It tells an intersting story about how New Yorkers commute with the data of New York cab service. A lot more interesting questions can be answered using the two datasets. With the data, we not only know more about New Yorkers who take the cab, who they are, where they live, and where they go at different times of the week, but combining with the OSM data, we know more, such as the activities people engaged in at their destinations and relationships between business locations and movement of people. 

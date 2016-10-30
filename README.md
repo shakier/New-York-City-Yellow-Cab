@@ -1,5 +1,5 @@
 
-# Moving the City with Yellow Cabs
+# New York City on the Move: Stories about New Yorkers' Go-Abouts with Yellow Cab Data 
 ## Qianqi Kay Shen
 ## October 28, 2016
 

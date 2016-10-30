@@ -64,15 +64,15 @@ write.csv(theater_coord, file = "theatre_coord.csv")
 
 There are 2,323,898 trip records in the data sample, which cover all trips from 2016-01-24 to 2016-01-30. Counting trips by weekdays, we find out that the trip numbers increase sequentially from Sunday to Saturday. Sunday has the least trip number, which is 157,344, and Saturday has the largest trip number, 427,577.
 
-![GitHub Logo](/images/trip_by_weekday.png)
+![GitHub Logo](/trip_by_weekday.png)
 
 Looking the data by hours, we find out that there are two peak hours. Unprisingly, they coincide with commute hours, 8 in the morning and 19 in the evening. Interestingly, more people take a cab to go home than go to work.
 
-![GitHub Logo](/images/trip_by_hour.png)
+![GitHub Logo](/trip_by_hour.png)
 
 I also plotted the trip number by hours by weekdays. It turns out that New Yorkers do take cabs to work. As the week goes by, more and more commuters choose to go to work and go home by cab. Friday night is the go out night. Cabs going around town until early morning Saturday. And the fun continues throughout Saturday. However, the city quiets down from Sunday early morning--significantly fewer people go out on cabs throughout Sunday. 
 
-![GitHub Logo](/images/trip_by_weekday_hour.png)
+![GitHub Logo](/trip_by_weekday_hour.png)
 
 The OSM data has 5,324,910 unique node ID's. Each node has coordinates longitude and latitude. For each node, the data provides different key and value pairs as description of that node. For example, a node may have a key "street" with a "value" showing the name of the street where the node is at. A node may also have a key "amenity" with a "value" showing what kind of amenity this node is. The top 20 keys are shown below.
 

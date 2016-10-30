@@ -5,7 +5,7 @@
 
 ## 1. Summary
 
-This project tells a story about New Yorkers' moving abouts with the Yellow Cab data. As of March 2014, 51,398 men and women licensed to drive medallion taxicabs (a.k.a, yellow cabs) in New York City. Every day, 600,000 people take a cab, accounting to 236 million in a year (reference: New York City Taxi and Limousine Commission). The yellow cabs provide a most convinient option for New Yorkers (and visitors) to go around the city. I ask a series of questions to find out interesting facts about the pattern of New Yorkers' cab usage. 
+This project tells a story about New Yorkers' move-abouts with the Yellow Cab data. As of March 2014, 51,398 men and women licensed to drive medallion taxicabs (a.k.a, yellow cabs) in New York City. Every day, 600,000 people take a cab, accounting to 236 million in a year (reference: New York City Taxi and Limousine Commission). The yellow cabs provide a most convenient option for New Yorkers (and visitors) to go around the city. I ask a series of questions to find out interesting facts about the pattern of New Yorkers' cab usage. 
 
 ## 2. Questions
 
@@ -16,10 +16,10 @@ I use the yellow taxi trip record data from New York City Taxi and Limousine Com
 
 In addition, for coordinate location information, I use OpenStreetMap New York City XML OSM data (http://metro.teczno.com/#new-york). After cleaning up the data, I constructed a  dataset contains main description information about each locality nodes (represented by a longitude-latitude pair), including what business it is in (be it school, theatre, restaurants, and so on) and the name of the locality.
 
-For the preliminrary stage, I use a sample of both datasets for quick analysis. For yellow taxi trips, the sample contains all trip information from 2016-01-24 to 2016-01-30. For OSM data, I focus on theatre data. 
+For the preliminary stage, I use a sample of both datasets for quick analysis. For yellow taxi trips, the sample contains all trip information from 2016-01-24 to 2016-01-30. For OSM data, I focus on theatre data. 
 
 ## 4. Potential problems with the data
-I realize that the majority of New Yorkers may use public transit such as subways and bus instead of cabs for daily commute. Even for the people who use hailing service, yellow cabs do not tell the entire story. There are For-Hire vehicles and UBER cabs. Nevertheless, as of August 2016, yellow cab daily trip number still almost doubles UBER (source: http://toddwschneider.com/posts/taxi-uber-lyft-usage-new-york-city/). The yellow cab data will tell a rather intersting and different story from public transit data about the commute pattern of New Yorkers.
+I realize that the majority of New Yorkers may use public transit such as subways and bus instead of cabs for daily commute. Even for the people who use hailing service, yellow cabs do not tell the entire story. There are For-Hire vehicles and UBER cabs. Nevertheless, as of August 2016, yellow cab daily trip number still almost doubles UBER (source: http://toddwschneider.com/posts/taxi-uber-lyft-usage-new-york-city/). The yellow cab data will tell a rather interesting and different story from public transit data about the commute pattern of New Yorkers.
 
 ## 5. Data Preparation
 ```{r echo=FALSE, message=FALSE, warning=FALSE, load_and_transform_taxi_data}
@@ -66,17 +66,68 @@ There are 2,323,898 trip records in the data sample, which cover all trips from 
 
 ![GitHub Logo](/trip_by_weekday.png)
 
-Looking the data by hours, we find out that there are two peak hours. Unprisingly, they coincide with commute hours, 8 in the morning and 19 in the evening. Interestingly, more people take a cab to go home than go to work.
+Looking the data by hours, we find out that there are two peak hours. Unsurprisingly, they coincide with commute hours, 8 in the morning and 19 in the evening. Interestingly, more people take a cab to go home than go to work.
 
 ![GitHub Logo](/trip_by_hour.png)
 
-I also plotted the trip number by hours by weekdays. It turns out that New Yorkers do take cabs to work. As the week goes by, more and more commuters choose to go to work and go home by cab. Friday night is the go out night. Cabs going around town until early morning Saturday. And the fun continues throughout Saturday. However, the city quiets down from Sunday early morning--significantly fewer people go out on cabs throughout Sunday. 
+I also plotted the trip number by hours by weekdays. It turns out that New Yorkers do take cabs to work. As the week goes by, more and more commuters choose to go to work and go home by cab. Friday night is the go out night. Cabs go around town until early morning Saturday. And the fun continues throughout Saturday. However, the city quiets down from Sunday early morning--significantly fewer people go out on cabs throughout Sunday. 
 
 ![GitHub Logo](/trip_by_weekday_hour.png)
 
 The OSM data has 5,324,910 unique node ID's. Each node has coordinates longitude and latitude. For each node, the data provides different key and value pairs as description of that node. For example, a node may have a key "street" with a "value" showing the name of the street where the node is at. A node may also have a key "amenity" with a "value" showing what kind of amenity this node is. The top 20 keys are shown below.
+```
+# A tibble: 20 × 2
+           key       n
+        <fctr>   <int>
+1           NA 5055170
+2   created_by  112690
+3  housenumber  102588
+4       street  102549
+5     postcode  100939
+6         name   24437
+7      amenity   20271
+8          ele   16043
+9   feature_id   14769
+10     created   12462
+11     highway   12264
+12   county_id   12124
+13    state_id   12124
+14       power    8733
+15    capacity    4683
+16       state    3960
+17         ref    3744
+18    religion    3713
+19      source    3551
+20 import_uuid    3510
+```
 
 For preliminary analysis, I only focus on amenity data. For the bigger project, however, other keys, such as parking, cuisine, religion, and so on, will also provide interesting geographical information. The top amenity values are shown below. Bicycle parking has the highest hit, 4,794. Then it is school, 4,525, place of worship, 3,879, and restaurant, 1,186. In this primary stage, I will use restaurant data to show how I will use this data, combined with the taxi data, to do analysis. In the future, I may also look at other interesting values, such as schools, parking, and bars.
+
+```
+# A tibble: 20 × 2
+              value     n
+             <fctr> <int>
+1   bicycle_parking  4794
+2            school  4525
+3  place_of_worship  3879
+4        restaurant  1186
+5      fire_station   612
+6         fast_food   447
+7        grave_yard   411
+8              cafe   376
+9           parking   346
+10            bench   340
+11          library   324
+12         hospital   311
+13             bank   309
+14      post_office   305
+15   drinking_water   194
+16             fuel   192
+17         pharmacy   182
+18          toilets   159
+19         post_box   148
+20              bar   134
+```
 
 ## 6.2. Data plotting
 
@@ -116,4 +167,4 @@ Who are the riders that pay the highest tip? In general, people take a cab withi
 ![GitHub Logo](/plot_high_tip2.png)
 
 # 7. Conclusion
-This exciting data exploratory project targets the audiences who are interested in relating urban life and traffic movements with their businesses. It could be cab hailing businesses, or businesses picking up the best location for its enterprise. It tells an intersting story about how New Yorkers commute with the data of New York cab service. A lot more interesting questions can be answered using the two datasets. With the data, we not only know more about New Yorkers who take the cab, who they are, where they live, and where they go at different times of the week, but combining with the OSM data, we know more, such as the activities people engaged in at their destinations and relationships between business locations and movement of people. 
+This exciting data exploratory project targets the audiences who are interested in urban life and traffic movements. Audience may also find useful information for business and commercial activities--for example, cab hailing businesses, or enterprises finding locations for their businesses may find this report informative. With the data of New York cab service, this project tells multiple interesting stories about New Yorkers' commute. Combining with OpenStreetMap data, a lot more interesting questions can be answered. We not only know about the time and locations of people's movement with cabs, but we will also know what kind of activities people engaged in at their destinations.The mapping of the trips and descriptions of the destinations will show a series of stories about the daily life of New Yorkers.

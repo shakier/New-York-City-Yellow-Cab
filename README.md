@@ -78,4 +78,42 @@ The OSM data has 5,324,910 unique node ID's. Each node has coordinates longitude
 
 For preliminary analysis, I only focus on amenity data. For the bigger project, however, other keys, such as parking, cuisine, religion, and so on, will also provide interesting geographical information. The top amenity values are shown below. Bicycle parking has the highest hit, 4,794. Then it is school, 4,525, place of worship, 3,879, and restaurant, 1,186. In this primary stage, I will use restaurant data to show how I will use this data, combined with the taxi data, to do analysis. In the future, I may also look at other interesting values, such as schools, parking, and bars.
 
+## 6.2. Data plotting
 
+This plot uses all the trips as inputs, and it basically becomes a road map of New York City area! As seen from the map, most cab use concentrates in Manhattan, and then the downtown areas in Queens and Brooklyn. Very little cab use in Bronx. In addition, we notice there is a cab line along a subway line (probably E) connecting to JFK Airport. It's very likely that people coming from and going to airport combine their trips with taxi and subways! 
+
+![GitHub Logo](/nyc_taxi_pickup.png)
+
+![GitHub Logo](/nyc_taxi_dropoff.png)
+
+Let's see where the cab-taking working New Yorkers are coming from and going to work. Manhattan is still the place where more cab use is in. However, pickups are more concentrating on the east side, while dropoffs are all over Manhattan. In addition, dropoffs are more sparse, especially in Queens and Brooklyn areas. 
+
+![GitHub Logo](/nyc-taxi-morning-pickup.png)
+
+![GitHub Logo](/nyc-taxi-morning-dropoff.png)
+
+Where do people go out on Friday night? To my surprise, the dropoff locations do not seem perfectly co-locate with the restaurants. This could be due to that the OSM data is incomplete. Or, people simply do not take cabs to restaurants. But anyway, this will need further investigations, including, but not limited to, analyzing data from other weeks. 
+
+
+![GitHub Logo](/Friday_night_goout1.png)
+
+![GitHub Logo](/Friday_night_goout2.png)
+
+Then, would New Yorkers be taking cabs in late Friday night? Yes, more New Yorkers are taking cabs after 10 o'clock Friday night. 
+
+![GitHub Logo](/Friday_late_night_pickup.png)
+
+![GitHub Logo](/Friday_late_night_pickup2.png)
+
+Now, let's take a look at the theatre district on Friday night. The map shows where people go after leaving the theatre district on Friday night. Most trips are in Manhattan. Very few go to Queens. And even fewer to other areas. But the data points are too small at this point, so I will need more data to investigate this question. 
+
+![GitHub Logo](/theatre_goers_friday_night.png)
+
+Who are the riders that pay the highest tip? In general, people take a cab within Manhattan tip higher. High tippers tend to be those who go to Times Square and Midtown. They could be visitors or financial bankers. Besides, wealthy people living in Upper East seem to tip more as well.
+
+![GitHub Logo](/plot_high_tip.png)
+
+![GitHub Logo](/plot_high_tip2.png)
+
+# 7. Conclusion
+This exciting data exploratory project targets the audiences who are interested in relating urban life and traffic movements with their businesses. It could be cab hailing businesses, or businesses picking up the best location for its enterprise. It tells an intersting story about how New Yorkers commute with the data of New York cab service. A lot more interesting questions can be answered using the two datasets. With the data, we not only know more about New Yorkers who take the cab, who they are, where they live, and where they go at different times of the week, but combining with the OSM data, we know more, such as the activities people engaged in at their destinations and relationships between business locations and movement of people. 

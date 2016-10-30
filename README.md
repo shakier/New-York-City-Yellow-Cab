@@ -1,6 +1,6 @@
 
 # Moving the City with Yellow Cabs
-## author: Qianqi Kay Shen
+## Qianqi Kay Shen
 ## date: "October 28, 2016"
 
 ## 1. Summary

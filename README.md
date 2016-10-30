@@ -66,7 +66,8 @@ There are 2,323,898 trip records in the data sample, which cover all trips from 
 
 ![GitHub Logo](/trip_by_weekday.png)
 
-Looking the data by hours, we find out that there are two peak hours. Unsurprisingly, they coincide with commute hours, 8 in the morning and 19 in the evening. Interestingly, more people take a cab to go home than go to work.
+Looking the data by hours, we find out that there are two peak hours. Unsurprisingly, they 
+overlap with commute hours, 8 in the morning and 19 in the evening. Interestingly, more people take a cab to go home than go to work.
 
 ![GitHub Logo](/trip_by_hour.png)
 

@@ -82,9 +82,9 @@ For preliminary analysis, I only focus on amenity data. For the bigger project, 
 
 This plot uses all the trips as inputs, and it basically becomes a road map of New York City area! As seen from the map, most cab use concentrates in Manhattan, and then the downtown areas in Queens and Brooklyn. Very little cab use in Bronx. In addition, we notice there is a cab line along a subway line (probably E) connecting to JFK Airport. It's very likely that people coming from and going to airport combine their trips with taxi and subways! 
 
-![GitHub Logo](/nyc_taxi_pickup.png)
+![GitHub Logo](/nyc-taxi-pickup.png)
 
-![GitHub Logo](/nyc_taxi_dropoff.png)
+![GitHub Logo](/nyc-taxi-dropoff.png)
 
 Let's see where the cab-taking working New Yorkers are coming from and going to work. Manhattan is still the place where more cab use is in. However, pickups are more concentrating on the east side, while dropoffs are all over Manhattan. In addition, dropoffs are more sparse, especially in Queens and Brooklyn areas. 
 

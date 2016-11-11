@@ -184,7 +184,9 @@ Most trips to airports begin from Midtown and Lower Manhattan. I caculated the m
 ![GitHub Logo](images/midtown_to_airport_plot.png)
 
 ### A Sample of the Information from Neighborhood to Airport by Hours by Weekdays
+
 #### From Midtown to EWR
+
 ```   wday hour     time
 1     2    4 31.60000
 2     2    5 39.36667

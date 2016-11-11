@@ -282,7 +282,7 @@ Trips from hotel to airport are a little more than the other way around. About 3
 
 On Friday night, top neighborhoods as the pickup places to go to restaurants are Midtown, Gramercy, Upper East Side, Chelsea, and Upper West Side. The bar charts show trips to restaurants by hour on Wednesday and Friday. The patterns are similar except that that more people go to restaurants for dinner and leave later. The data also shows the top dropoff neighborhoods from restaurants. On weedays, top dropoff nieghborhoods are Midtown, Upper East, Upper West, Gramercy, Chelsea, etc., and in addition to these, East Village, Greenwich Village on weekends. 
 
-![GitHub Logo](plot_trip_to_restaurant_WEDFRI.png)
+![GitHub Logo](images/plot_trip_to_restaurant_WEDFRI.png)
 
 ### Top 10 Pick-up Neighborhoods to Restaurants on Friday Night (5-8 pm)
 ```
@@ -320,7 +320,7 @@ Friday night dropoff locations do not seem perfectly co-locate with the restaura
 Is it true that the city never sleep? Partially true. After comparing the number of trips made to restaurants by hour on Wednesday, Friday, and Saturday, I found that although most people go to restaurants for dinner, they only stayed late on Friday and Saturday. A map below shows Friday late night (after ten) pickups from restauants. On Saturday morning, most people sleep in until 10 o'clock. People may also stay late on Saturday night. On Sunday, much fewer people go to restaurants and even if they go, they do not tend to stay late. 
 
 
-![GitHub Logo](plot_trip_from_restaurants_wday_comparison.png)
+![GitHub Logo](images/plot_trip_from_restaurants_wday_comparison.png)
 
 ### Other ways to explore the data
 Who are the riders that pay the highest tip? In general, people take a cab within Manhattan tip higher. High tippers tend to be those who go to Times Square and Midtown. They could be visitors or financial bankers. Besides, wealthy people living in Upper East seem to tip more as well.

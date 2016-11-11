@@ -1,0 +1,732 @@
+---
+title: "Untitled"
+author: "KS"
+date: "November 11, 2016"
+output: html_document
+---
+
+There are 2,323,898 trip records in the data sample, which cover all trips from 2016-01-24 to 2016-01-30. Counting trips by weekdays, we find out that the trip numbers increase sequentially from Sunday to Saturday. Sunday has the least trip number, which is 157,344, and Saturday has the largest trip number, 427,577.
+
+
+```{r echo=FALSE, message=FALSE, warning=FALSE, data_description1}
+#plot number of trips by weekdays
+taxi_sample.count_by_wday <- taxi_sample %>%
+  group_by(wday) %>%
+  summarise(n = n()) %>%
+  arrange(wday)
+
+trip_by_weekday<-ggplot(aes(x = factor(wday), y = n), data = taxi_sample.count_by_wday) + geom_bar(stat = "identity", color = "red", fill = "red", alpha = 0.5) + coord_cartesian(ylim = c(0,500000))+ scale_x_discrete(labels=c("1" = "Sunday", "2" = "Monday", "3" = "Tuesday", "4" = "Wednesday", "5" = "Thursday", "6" = "Friday", "7" = "Saturday")) + labs(x = "Weekdays", y = "number of trips", title = "Number of Trips by Weekdays") +geom_text(aes(label=comma(n)), vjust=-0.25, size = 3)
+
+png("trip_by_weekday.png", w=800, h=600)
+trip_by_weekday
+dev.off()
+```
+
+Looking the data by hours, we find out that there are two peak hours. Unsuprisingly, they coincide with commute hours, 8 in the morning and 19 in the evening. Interestingly, more people take a cab to go home than go to work.
+
+```{r echo=FALSE, message=FALSE, warning=FALSE, data_description2}
+#plot number of trips by hour
+taxi_sample.count_by_hour <- taxi_sample %>%
+  group_by(hour) %>%
+  summarise(n = n()) %>%
+  arrange(hour)
+
+trip_by_hour<-ggplot(aes(x = factor(hour), y = n), data = taxi_sample.count_by_hour) + geom_bar(stat = "identity", color = "red", fill = "red", alpha = 0.5) + coord_cartesian(ylim = c(0,200000)) + labs(x = "Hours", y = "Number of trips", title = "Number of Trips by Hours") +geom_text(aes(label=comma(n)), vjust=-0.25, size = 2)
+
+png("trip_by_hour.png", w=800, h=600)
+trip_by_hour
+dev.off()
+```
+
+I also plotted the trip number by hours by weekdays. It turns out that New Yorkers do take cabs to work. As the week goes by, more and more commuters choose to go to work and go home by cab. Friday night is the go out night. Cabs going around town until early morning Saturday. And the fun continues throughout Saturday. However, the city quiets down from Sunday early morning--significantly fewer people go out on cabs throughout Sunday. 
+
+```{r echo=FALSE, message=FALSE, warning=FALSE, data_description3}
+#plot number of trips by hour by weekdays
+taxi_sample.count_by_Sunday_hour <- subset(taxi_sample, taxi_sample$wday == 1) %>%
+  group_by(hour) %>%
+  summarise(n = n()) %>%
+  arrange(hour)
+
+p_Sun<-ggplot(aes(x = factor(hour), y = n), data = taxi_sample.count_by_Sunday_hour) + geom_bar(stat = "identity", color = "red", fill = "red", alpha = 0.5) + coord_cartesian(ylim = c(0,30000)) + labs(x = "Sunday", y = "Number of trips", title = "Number of Trips by Hours") +geom_text(aes(label=comma(n)), vjust=-0.25, size = 2)
+
+taxi_sample.count_by_Monday_hour <- subset(taxi_sample, taxi_sample$wday == 2) %>%
+  group_by(hour) %>%
+  summarise(n = n()) %>%
+  arrange(hour)
+
+p_Mon <- ggplot(aes(x = factor(hour), y = n), data = taxi_sample.count_by_Monday_hour) + geom_bar(stat = "identity", color = "red", fill = "red", alpha = 0.5) + coord_cartesian(ylim = c(0,30000)) + labs(x = "Monday", y = "Number of trips") +geom_text(aes(label=comma(n)), vjust=-0.25, size = 2)
+
+taxi_sample.count_by_Tuesday_hour <- subset(taxi_sample, taxi_sample$wday == 3) %>%
+  group_by(hour) %>%
+  summarise(n = n()) %>%
+  arrange(hour)
+
+p_Tue <- ggplot(aes(x = factor(hour), y = n), data = taxi_sample.count_by_Tuesday_hour) + geom_bar(stat = "identity", color = "red", fill = "red", alpha = 0.5) + coord_cartesian(ylim = c(0,30000)) + labs(x = "Tuesday", y = "Number of trips") +geom_text(aes(label=comma(n)), vjust=-0.25, size = 2)
+
+taxi_sample.count_by_Wednesday_hour <- subset(taxi_sample, taxi_sample$wday == 4) %>%
+  group_by(hour) %>%
+  summarise(n = n()) %>%
+  arrange(hour)
+
+p_Wed <- ggplot(aes(x = factor(hour), y = n), data = taxi_sample.count_by_Wednesday_hour) + geom_bar(stat = "identity", color = "red", fill = "red", alpha = 0.5) + coord_cartesian(ylim = c(0,30000)) + labs(x = "Wednesday", y = "Number of trips") +geom_text(aes(label=comma(n)), vjust=-0.25, size = 2)
+
+taxi_sample.count_by_Thursday_hour <- subset(taxi_sample, taxi_sample$wday == 5) %>%
+  group_by(hour) %>%
+  summarise(n = n()) %>%
+  arrange(hour)
+
+p_Thur <- ggplot(aes(x = factor(hour), y = n), data = taxi_sample.count_by_Thursday_hour) + geom_bar(stat = "identity", color = "red", fill = "red", alpha = 0.5) + coord_cartesian(ylim = c(0,30000)) + labs(x = "Thursday", y = "Number of trips") +geom_text(aes(label=comma(n)), vjust=-0.25, size = 2)
+
+taxi_sample.count_by_Friday_hour <- subset(taxi_sample, taxi_sample$wday == 6) %>%
+  group_by(hour) %>%
+  summarise(n = n()) %>%
+  arrange(hour)
+
+p_Fri <- ggplot(aes(x = factor(hour), y = n), data = taxi_sample.count_by_Wednesday_hour) + geom_bar(stat = "identity", color = "red", fill = "red", alpha = 0.5) + coord_cartesian(ylim = c(0,30000)) + labs(x = "Friday", y = "Number of trips") +geom_text(aes(label=comma(n)), vjust=-0.25, size = 2)
+
+taxi_sample.count_by_Saturday_hour <- subset(taxi_sample, taxi_sample$wday == 7) %>%
+  group_by(hour) %>%
+  summarise(n = n()) %>%
+  arrange(hour)
+
+p_Sat <- ggplot(aes(x = factor(hour), y = n), data = taxi_sample.count_by_Saturday_hour) + geom_bar(stat = "identity", color = "red", fill = "red", alpha = 0.5) + coord_cartesian(ylim = c(0,30000)) + labs(x = "Saturday", y = "Number of trips") +geom_text(aes(label=comma(n)), vjust=-0.25, size = 2)
+
+trip_by_weekday_hour<-grid.arrange(p_Sun, p_Mon, p_Tue, p_Wed, p_Thur, p_Fri, p_Sat, ncol=2)
+png("trip_by_weekday_hour.png", w=800, h=600)
+trip_by_weekday_hour
+dev.off()
+
+```
+
+This plot uses all the trips as inputs, and it basically becomes a road map of New York City area! As seen from the map, most cab use concentrates in Manhattan, and then the downtown areas in Queens and Brooklyn. Very little cab use in Bronx. In addition, we notice there is a cab line along a subway line (probably E) connecting to JFK Airport. It's very likely that people coming from and going to airport combine their trips with taxi and subways! 
+
+```{r echo=FALSE, message=FALSE, warning=FALSE, data_plotting1}
+
+min_lat <- 40.5774
+max_lat <- 40.9176
+min_lon <- -74.15
+max_lon <- -73.7004
+
+plot_allpickup <- ggplot(taxi_sample, aes(x=pickup_longitude, y=pickup_latitude)) + geom_point(size=0.02,  color= "red", alpha = 0.2) + scale_x_continuous(limits=c(min_lon, max_lon)) + scale_y_continuous(limits=c(min_lat, max_lat)) + labs(x = "Taxi Pickups") + theme(axis.title.y=element_blank(), axis.title.x = element_text(size = rel(1)))
+
+png("nyc-taxi-pickup.png", w=600, h=600)
+plot_allpickup 
+dev.off()
+
+plot_alldropoff <- ggplot(taxi_sample, aes(x=dropoff_longitude, y=dropoff_latitude)) + geom_point(size=0.02,  color= "red", alpha = 0.2) + scale_x_continuous(limits=c(min_long, max_long)) + scale_y_continuous(limits=c(min_lat, max_lat))+labs(x = "Taxi Dropoffs") + theme(axis.title.y=element_blank(), axis.title.x = element_text(size = rel(1))) 
+
+png("nyc-taxi-dropoff.png", w=600, h=600)
+plot_alldropoff
+dev.off()
+```
+
+Let's see where the cab-taking working New Yorkers are coming from and going to work. Plots below show the pick-ups and drop-offs during weekday mornings (from 7 am to 9 am). Manhattan is still the place where more cab use is in. However, pickups are more concentrating on the east side, while dropoffs are all over Manhattan. In addition, dropoffs are more sparse, especially in Queens and Brooklyn areas.
+
+```{r echo=FALSE, message=FALSE, warning=FALSE, data_plotting2}
+plot_workday_pickup <- ggplot(subset(taxi_sample, taxi_sample$hour>=7&taxi_sample$hour<=9&taxi_sample$wday>=2&taxi_sample$wday<=6), aes(x=pickup_longitude, y=pickup_latitude)) + geom_point(size=0.02,  color= "red", alpha = 0.2) + scale_x_continuous(limits=c(min_long, max_long)) + scale_y_continuous(limits=c(min_lat, max_lat)) + xlab("Taxi Workday Morning Pickups") + theme(axis.title.y=element_blank(), axis.title.x = element_text(size = rel(1)))
+png("nyc-taxi-morning-pickup.png", w=600, h=600)
+plot_workday_pickup 
+dev.off()
+
+plot_workday_dropoff <- ggplot(subset(taxi_sample, taxi_sample$hour>=7&taxi_sample$hour<=9&taxi_sample$wday>=2&taxi_sample$wday<=6), aes(x=dropoff_longitude, y=dropoff_latitude)) + geom_point(size=0.02,  color= "red", alpha = 0.2) + scale_x_continuous(limits=c(min_long, max_long)) + scale_y_continuous(limits=c(min_lat, max_lat)) + labs(x ="Taxi Workday Morning Dropoffs") + theme(axis.title.y=element_blank(), axis.title.x = element_text(size = rel(1)))
+png("nyc-taxi-morning-dropoff.png", w=600, h=600)
+plot_workday_dropoff
+dev.off()
+```
+
+Below are queries that show the neighborhoods as pick-up or drop-off locations that are with the highest numbers of trips.
+```{r echo=FALSE, message=FALSE, warning=FALSE, neighborhood_dropoff_pickup}
+
+#percentage of trips by pickup neighborhood (top 20)
+pickup_count_by_nbh <- sqldf("SELECT pickup_name, pickup_city, count(*) as num, (count(*)*100.0/(SELECT count(*) FROM taxi_sample)) as percent
+                             FROM taxi_sample
+                             GROUP BY pickup_name
+                             ORDER BY percent DESC
+                             LIMIT 20")
+
+#percentage of trips by dropoff neighborhood (top 20)
+dropoff_count_by_nbh <- sqldf("SELECT dropoff_name, dropoff_city, count(*) as num, (count(*)*100.0/(SELECT count(*) FROM taxi_sample)) as percent
+                              FROM taxi_sample
+                              GROUP BY dropoff_name
+                              ORDER BY percent DESC
+                              LIMIT 20")
+
+#pickup neighborhood in the weekday morning (top 20)
+pickup_nbg_wday_mn <- sqldf("SELECT pickup_name, pickup_city, count(*) as num, (count(*)*100.0/(SELECT count(*) FROM taxi_sample)) as percent
+                            FROM taxi_sample
+                            WHERE (wday >= 2 AND wday <= 6) AND
+                            (hour >= 5 AND hour <= 9)
+                            GROUP BY pickup_name
+                            ORDER BY percent DESC
+                            LIMIT 20")
+
+#dropoff neighborhoods in the weekday morning (top 20)
+dropoff_nbg_wday_mn <- sqldf("SELECT dropoff_name, dropoff_city, count(*) as num, (count(*)*100.0/(SELECT count(*) FROM taxi_sample)) as percent
+                             FROM taxi_sample
+                             WHERE (wday >= 2 AND wday <= 6) AND
+                             (hour >= 5 AND hour <= 9)
+                             GROUP BY dropoff_name
+                             ORDER BY percent DESC
+                             LIMIT 20")
+```
+
+Do people take cab to subway stations? Yes, they do. And you would expect that more people that do not live in Manhattan do so. However, the numbers show that even people who lives in Manhattan do so too. And I map three neighborhoods (Upper East, Chelsea, and Astoria in Queens) that are with high numbers of such trips to show which subway entrances these people take cabs to. Some of them may just take cabs to the destinations that happen to be subway entrances. But some of them do go to the closest subway entrances to their neighborhoods.
+
+```{r echo=FALSE, message=FALSE, warning=FALSE, subways}
+
+subway_coord <- sqldf("SELECT DISTINCT merge_nodes_tags.lat, merge_nodes_tags.lon,merge_nodes_tags.id
+                      FROM merge_nodes_tags
+                      WHERE merge_nodes_tags.key = 'railway'
+                      AND merge_nodes_tags.value = 'subway_entrance'")
+
+loc <- c(-74.266428, 40.493119, -73.653912, 40.927977)
+m_subways <- get_map(location = loc, zoom = 12, source="stamen", maptype = "toner")
+basemap_subways <- ggmap(m_subways)
+basemap_subways + geom_point(data = subway_coord, aes( x = lon, y = lat), size = 0.5, color = "red")
+
+trips_to_subway <- sqldf("SELECT a.id, trips.pickup_longitude, trips.pickup_latitude, trips.dropoff_longitude, trips.dropoff_latitude, trips.RideID, trips.wday, trips.hour, trips.pickup_city, trips.pickup_name, trips.trip_distance 
+                         FROM subway_coord as a, taxi_sample as trips 
+                         WHERE trips.dropoff_longitude<=a.lon+0.00015 
+                         AND trips.dropoff_longitude>=a.lon-0.00015 
+                         AND trips.dropoff_latitude<=a.lat+0.00034 
+                         AND trips.dropoff_latitude>=a.lat-0.00034
+                         ")
+
+#trips to subway counts by neighborhoods
+subway_count_by_nbh <- sqldf("SELECT pickup_name, pickup_city, count(*) as num
+                             FROM trips_to_subway
+                             GROUP BY pickup_name
+                             ORDER BY num DESC
+                             LIMIT 30")
+
+#how many trips to subway do people make in the morning during weekday by cities?
+sub_cnt_by_cities_mn_wday <- sqldf("
+                                   SELECT pickup_city, wday, count(*) as num
+                                   FROM trips_to_subway
+                                   WHERE wday >=2 AND wday <= 6 AND hour >=7 AND hour <=9
+                                   GROUP BY pickup_city, wday
+                                   ")
+
+
+Upper_East_to_subway <- sqldf("SELECT dropoff_latitude, dropoff_longitude, trip_distance, wday, hour
+                              FROM trips_to_subway
+                              WHERE pickup_name = 'Upper East Side'
+                              ")
+Upper_East_to_subway_count <- sqldf("SELECT hour, avg(trip_distance), count(*) as num
+                                    FROM trips_to_subway
+                                    WHERE pickup_name = 'Upper East Side' 
+                                    AND wday>=2 AND wday <=6
+                                    GROUP BY hour
+                                    ")
+
+m_subways <- get_map(location = c(lon = -73.961467, lat = 40.768521), zoom = 12, source="stamen", maptype = "toner")
+basemap_subways <- ggmap(m_subways)
+Upper_East_to_subway_map <- basemap_subways+ geom_point(data = subset(Upper_East_to_subway, Upper_East_to_subway$wday>=2 & Upper_East_to_subway$wday<=6 & Upper_East_to_subway$hour >=7 & Upper_East_to_subway$hour <=9), aes(x= dropoff_longitude, y = dropoff_latitude), size = 0.8, color = "blue", alpha = 0.3) + geom_point(data = subway_coord, aes( x = lon, y = lat), size = 0.05, color = "red") + stat_density2d(data = subset(Upper_East_to_subway, Upper_East_to_subway$wday>=2 & Upper_East_to_subway$wday<=6 & Upper_East_to_subway$hour >=7 & Upper_East_to_subway$hour <=9), aes(x= dropoff_longitude, y = dropoff_latitude, fill = ..level..), size = 0.5, color = "blue") + scale_fill_gradient(low = "yellow", high = "red")
+png("Upper_East_to_subway_map.png", w=800, h=600)
+Upper_East_to_subway_map
+dev.off()
+
+
+Chelsea_to_subway <- sqldf("SELECT dropoff_latitude, dropoff_longitude, trip_distance, wday, hour
+                           FROM trips_to_subway
+                           WHERE pickup_name = 'Chelsea'
+                           ")
+Chelsea_to_subway_count <- sqldf("SELECT hour, avg(trip_distance), count(*) as num
+                                 FROM trips_to_subway
+                                 WHERE pickup_name = 'Chelsea'
+                                 AND wday>=2 AND wday <=6
+                                 GROUP BY hour
+                                 ")
+
+m_subways <- get_map(location = c(lon = -73.961467, lat = 40.768521), zoom = 12, source="stamen", maptype = "toner")
+basemap_subways <- ggmap(m_subways)
+Chelsea_to_subway_map <- basemap_subways+ geom_point(data =subset(Chelsea_to_subway, Chelsea_to_subway$wday>=2 & Chelsea_to_subway$wday<=6 & Chelsea_to_subway$hour >=7 & Chelsea_to_subway$hour <=9), aes(x= dropoff_longitude, y = dropoff_latitude), size = 0.5, color = "blue", alpha = 0.5) + geom_point(data = subway_coord, aes( x = lon, y = lat), size = 0.05, color = "red") + stat_density2d(data = subset(Chelsea_to_subway, Chelsea_to_subway$wday>=2 & Chelsea_to_subway$wday<=6 & Chelsea_to_subway$hour >=7 & Chelsea_to_subway$hour <=9), aes(x= dropoff_longitude, y = dropoff_latitude, fill = ..level..), size = 0.5, color = "blue") + scale_fill_gradient(low = "yellow", high = "red")
+png("Chelsea_to_subway_map.png", w=800, h=600)
+Chelsea_to_subway_map
+dev.off()
+
+Astoria_to_subway <- sqldf("SELECT dropoff_latitude, dropoff_longitude, trip_distance, wday, hour
+                           FROM trips_to_subway
+                           WHERE pickup_name = 'Astoria-Long Island City'")
+Astoria_to_subway_count <- sqldf("SELECT hour, avg(trip_distance), count(*) as num
+                                 FROM trips_to_subway
+                                 WHERE pickup_name = 'Astoria-Long Island City'
+                                 AND wday>=2 AND wday <=6
+                                 GROUP BY hour
+                                 ")
+Astoria_to_subway_map <- basemap_subways+ geom_point(data =subset(Astoria_to_subway, Astoria_to_subway$wday>=2 & Astoria_to_subway$wday<=6 & Astoria_to_subway$hour >=7 & Astoria_to_subway$hour <=9), aes(x= dropoff_longitude, y = dropoff_latitude), size = 0.5, color = "blue", alpha = 0.5) + geom_point(data = subway_coord, aes( x = lon, y = lat), size = 0.05, color = "red") + stat_density2d(data = subset(Astoria_to_subway, Astoria_to_subway$wday>=2 & Astoria_to_subway$wday<=6 & Astoria_to_subway$hour >=7 & Astoria_to_subway$hour <=9), aes(x= dropoff_longitude, y = dropoff_latitude, fill = ..level..), size = 0.5, color = "blue") + scale_fill_gradient(low = "yellow", high = "red") 
+png("Astoria_to_subway_map.png", w=800, h=600)
+Astoria_to_subway_map
+dev.off()
+
+
+three_nbh_wday_to_subway_counts <- sqldf("SELECT a.hour, a.num as Upper_East, b.num as Chelsea, c.num as Astoria
+                                         FROM Upper_East_to_subway_count as a, Chelsea_to_subway_count as b, Astoria_to_subway_count as c
+                                         WHERE a.hour = b.hour AND b.hour = c.hour")
+mdf <- melt(three_nbh_wday_to_subway_counts, id.vars="hour", value.name="value", variable.name="Neighborhoods")
+
+three_nbh_wday_to_subway_counts_plot <- ggplot(data=mdf, aes(x=hour, y=value, group = Neighborhoods, colour = Neighborhoods)) +geom_line() + geom_point(size=4, shape=21, fill="white")
+
+png("three_nbh_wday_to_subway_counts_plot", w=800, h=600)
+three_nbh_wday_to_subway_counts_plot
+dev.off()
+
+
+trips_from_subway <- sqldf("SELECT a.id, trips.dropoff_longitude, trips.dropoff_latitude, trips.RideID, trips.wday, trips.hour, trips.dropoff_city, trips.dropoff_name, trips.trip_distance, trips.pickup_longitude, trips.pickup_latitude
+                           FROM subway_coord as a, taxi_sample as trips 
+                           WHERE trips.pickup_longitude<=a.lon+0.00015 AND trips.pickup_longitude>=a.lon-0.00015 AND trips.pickup_latitude <=a.lat+0.00034 AND trips.pickup_latitude>=a.lat-0.00034
+                           ")
+from_subway_count_by_nbh <- sqldf("SELECT dropoff_name, dropoff_city, count(*) as num
+                                  FROM trips_from_subway
+                                  GROUP BY dropoff_name
+                                  ORDER BY num DESC")
+
+#how many trips from subway do people make in the evening during weekday by cities?
+from_sub_cnt_by_cities_ev_wday <- sqldf("
+                                        SELECT dropoff_city, wday, count(*) as num
+                                        FROM trips_from_subway
+                                        WHERE wday >=2 AND wday <= 6 AND hour >=17 AND hour <=20
+                                        GROUP BY dropoff_city, wday
+                                        ")
+
+Upper_East_from_subway <- sqldf("SELECT pickup_latitude, pickup_longitude, trip_distance, wday, hour
+                                FROM trips_from_subway
+                                WHERE dropoff_name = 'Upper East Side'
+                                ")
+Upper_East_from_subway_count <- sqldf("SELECT hour, avg(trip_distance), count(*) as num
+                                      FROM trips_from_subway
+                                      WHERE dropoff_name = 'Upper East Side' 
+                                      AND wday>=2 AND wday <=6
+                                      GROUP BY hour
+                                      ")
+
+Upper_East_from_subway_map_leveled <- basemap_subways+ stat_density2d(data = subset(Upper_East_from_subway, Upper_East_from_subway$wday>=2 & Upper_East_from_subway$wday<=6 & Upper_East_from_subway$hour >=7 & Upper_East_from_subway$hour <=9), aes(x= pickup_longitude, y = pickup_latitude, fill = ..level..), size = 0.5, color = "blue") + scale_fill_gradient(low = "yellow", high = "red") + geom_point(data = subway_coord, aes( x = lon, y = lat), size = 0.2, color = "red")
+png("Upper_East_from_subway_map_leveled.png", w=800, h=600)
+Upper_East_from_subway_map_leveled
+dev.off()
+
+Chelsea_from_subway <- sqldf("SELECT pickup_latitude, pickup_longitude, trip_distance, wday, hour
+                             FROM trips_from_subway
+                             WHERE dropoff_name = 'Chelsea'
+                             ")
+Chelsea_from_subway_count <- sqldf("SELECT hour, avg(trip_distance), count(*) as num
+                                   FROM trips_from_subway
+                                   WHERE dropoff_name = 'Chelsea' 
+                                   AND wday>=2 AND wday <=6
+                                   GROUP BY hour
+                                   ")
+
+Chelsea_from_subway_map_leveled <- basemap_subways+ stat_density2d(data = subset(Chelsea_from_subway, Chelsea_from_subway$wday>=2 & Chelsea_from_subway$wday<=6 & Chelsea_from_subway$hour >=7 & Chelsea_from_subway$hour <=9), aes(x= pickup_longitude, y = pickup_latitude, fill = ..level..), size = 0.5, color = "blue") + scale_fill_gradient(low = "yellow", high = "red") + geom_point(data = subway_coord, aes( x = lon, y = lat), size = 0.2, color = "red")
+png("Chelsea_from_subway_map_leveled.png", w=800, h=600)
+Chelsea_from_subway_map_leveled
+dev.off()
+
+Astoria_from_subway <- sqldf("SELECT pickup_latitude, pickup_longitude, trip_distance, wday, hour
+                             FROM trips_from_subway
+                             WHERE dropoff_name = 'Astoria-Long Island City'
+                             ")
+Astoria_from_subway_count <- sqldf("SELECT hour, avg(trip_distance), count(*) as num
+                                   FROM trips_from_subway
+                                   WHERE dropoff_name = 'Astoria-Long Island City' 
+                                   AND wday>=2 AND wday <=6
+                                   GROUP BY hour
+                                   ")
+
+Astoria_from_subway_map_leveled <- basemap_subways+ stat_density2d(data = subset(Astoria_from_subway, Astoria_from_subway$wday>=2 & Astoria_from_subway$wday<=6 & Astoria_from_subway$hour >=7 & Astoria_from_subway$hour <=9), aes(x= pickup_longitude, y = pickup_latitude, fill = ..level..), size = 0.5, color = "blue") + scale_fill_gradient(low = "yellow", high = "red") + geom_point(data = subway_coord, aes( x = lon, y = lat), size = 0.2, color = "red")
+png("Astoria_from_subway_map_leveled.png", w=800, h=600)
+Astoria_from_subway_map_leveled
+dev.off()
+
+```
+
+Airports! Most trips to airports begin from Midtown and Lower Manhattan. I caculated the median time needed during the weekdays from each neighborhoods to each airports and specially, I pick Midtown as an example to show the median time for every hour from Midtown to each airports. This information can be used for business travellers. 
+
+```{r echo=FALSE, message=FALSE, warning=FALSE, airport}
+airports <- c("LGA", "LGA", "LGA", "LGA", "JFK", "JFK", "JFK", "JFK", "JFK", "EWR", "EWR", "EWR")
+terminals <- c("Terminal A", "Terminal B", "Terminal C", "Terminal D", "Terminal 1", "Terminal 4", "Terminal 5", "Terminal 7", "Terminal 8", "Terminal A", "Terminal B", "Terminal C")
+lat <- c(40.772369, 40.774414, 40.770592, 40.768580, 40.643190, 40.644108, 40.646051, 40.648817, 40.647139, 40.687760, 40.690570, 40.695410)
+lon <- c(-73.886034, -73.871878, -73.865163, -73.862053, -73.789969, -73.782389, -73.776624, -73.782676, -73.789481, -74.182277, -74.177594, -74.177733)
+
+airport_coord <- data.frame(airports, terminals, lat, lon)
+
+m_airport <- get_map(location = c(lon = (min_lon+max_lon)/2, lat = (min_lat+max_lat)/2),zoom = 10, maptype='toner', source="stamen")
+
+basemap_airport <- ggmap(m_airport)
+basemap_airport + geom_point(data = airport_coord, aes( x = lon, y = lat), size = 0.5, color = "red")
+
+
+trips_to_airport <- sqldf("SELECT a.airports, trips.pickup_longitude, trips.pickup_latitude, trips.RideID, trips.wday, trips.hour, trips.pickup_city, trips.pickup_name, trips.trip_length
+                          FROM airport_coord as a, taxi_sample as trips 
+                          WHERE trips.dropoff_longitude<=a.lon+0.0004 AND trips.dropoff_longitude>=a.lon-0.0004 AND trips.dropoff_latitude <=a.lat+0.0006 AND trips.dropoff_latitude>=a.lat-0.0006
+                          ")
+
+trips_from_airport <- sqldf("SELECT a.airports, trips.dropoff_longitude, trips.dropoff_latitude, trips.RideID, trips.wday, trips.hour, trips.dropoff_city, trips.dropoff_name, trips.trip_length
+                            FROM airport_coord as a, taxi_sample as trips 
+                            WHERE trips.pickup_longitude<=a.lon+0.0004 AND trips.pickup_longitude>=a.lon-0.0004 AND trips.pickup_latitude <=a.lat+0.0006 AND trips.pickup_latitude>=a.lat-0.0006
+                            ")
+
+trip_count_from_airport_by_wday <- sqldf("SELECT wday, count(*) as num
+                                         FROM trips_from_airport
+                                         GROUP BY wday")
+
+trip_count_to_airport_by_wday <- sqldf("SELECT wday, count(*) as num
+                                       FROM trips_to_airport
+                                       GROUP BY wday")
+
+plot_trips_from_airport <- ggplot(trip_count_from_airport_by_wday, aes(x = factor(wday), y =num)) + geom_bar(stat = "identity",color = "red", fill = "red", alpha = 0.5)+geom_text(aes(label=comma(num)), vjust=-0.25, size = 3)+scale_x_discrete(labels=c("1" = "Sunday", "2" = "Monday", "3" = "Tuesday", "4" = "Wednesday", "5" = "Thursday", "6" = "Friday", "7" = "Saturday")) + labs(x = "Weekdays", y = "number of trips", title = "Number of Trips from Airports by Weekdays")
+plot_trips_to_airport <- ggplot(trip_count_to_airport_by_wday, aes(x = factor(wday), y =num)) + geom_bar(stat = "identity",color = "red", fill = "red", alpha = 0.5)+geom_text(aes(label=comma(num)), vjust=-0.25, size = 3)+scale_x_discrete(labels=c("1" = "Sunday", "2" = "Monday", "3" = "Tuesday", "4" = "Wednesday", "5" = "Thursday", "6" = "Friday", "7" = "Saturday")) + labs(x = "Weekdays", y = "number of trips", title = "Number of Trips to Airports by Weekdays")
+plot_airport_trips<-grid.arrange(plot_trips_from_airport, plot_trips_to_airport, ncol=1)
+png("plot_airport_trips.png", w=800, h=600)
+plot_airport_trips
+dev.off()
+
+
+to_JFK_time <- sqldf("SELECT pickup_name, avg(trip_length)/60 as time
+                     FROM trips_to_airport
+                     WHERE wday>=2 AND wday <=6 AND airports == 'JFK'
+                     GROUP BY pickup_name
+                     ORDER BY time DESC")
+
+to_LGA_time <- sqldf("SELECT pickup_name, avg(trip_length)/60 as time
+                     FROM trips_to_airport
+                     WHERE wday>=2 AND wday <=6 AND airports == 'LGA'
+                     GROUP BY pickup_name
+                     ORDER BY time DESC")
+
+to_EWR_time <- sqldf("SELECT pickup_name, avg(trip_length)/60 as time
+                     FROM trips_to_airport
+                     WHERE wday>=2 AND wday <=6 AND airports == 'EWR'
+                     GROUP BY pickup_name
+                     ORDER BY time DESC")
+
+loc <- c(-74.266428, 40.493119, -73.653912, 40.927977)
+m_aiport <- get_map(location = loc, zoom = 11, source="stamen", maptype = "toner")
+basemap_airport <- ggmap(m_airport)
+
+to_airport_map <- basemap_subways+ geom_point(data = subset(trips_to_airport, trips_to_airport$wday>=2 & trips_to_airport$wday<=6), aes(x= pickup_longitude, y = pickup_latitude), size = 0.8, color = "red", alpha = 0.3) + geom_point(data = airport_coord, aes( x = lon, y = lat), size = 0.05, color = "blue")+stat_density2d(data = subset(trips_to_airport, trips_to_airport$wday>=2 & trips_to_airport$wday<=6), aes(x= pickup_longitude, y = pickup_latitude, fill = ..level..), size = 0.5, color = "blue")
+
+png("to_airport_map.png", w=800, h=600)
+to_airport_map
+dev.off()
+
+#numbers of trips 
+midtown_to_LGA_time <- sqldf("SELECT wday, hour, median(trip_length)/60 as time
+                             FROM trips_to_airport
+                             WHERE wday>=2 AND wday <=6 AND airports = 'LGA'AND pickup_name = 'Midtown'
+                             GROUP BY wday, hour
+                             ORDER BY wday, hour")
+
+
+midtown_to_JFK_time <- sqldf("SELECT wday, hour, median(trip_length)/60 as time
+                             FROM trips_to_airport
+                             WHERE wday>=2 AND wday <=6 AND airports = 'JFK'AND pickup_name = 'Midtown'
+                             GROUP BY wday, hour
+                             ORDER BY wday, hour")
+
+
+midtown_to_EWR_time <- sqldf("SELECT wday, hour, median(trip_length)/60 as time
+                             FROM trips_to_airport
+                             WHERE wday>=2 AND wday <=6 AND airports = 'EWR'AND pickup_name = 'Midtown'
+                             GROUP BY wday, hour
+                             ORDER BY wday, hour")
+
+midtown_to_LGA_time_hour <- sqldf("SELECT  hour, median(trip_length)/60 as time
+                                  FROM trips_to_airport
+                                  WHERE wday>=2 AND wday <=6 AND airports = 'LGA'AND pickup_name = 'Midtown'
+                                  GROUP BY hour
+                                  ORDER BY hour")
+midtown_to_JFK_time_hour <- sqldf("SELECT hour, median(trip_length)/60 as time
+                                  FROM trips_to_airport
+                                  WHERE wday>=2 AND wday <=6 AND airports = 'JFK'AND pickup_name = 'Midtown'
+                                  GROUP BY hour
+                                  ORDER BY hour")
+midtown_to_EWR_time_hour <- sqldf("SELECT hour, median(trip_length)/60 as time
+                                  FROM trips_to_airport
+                                  WHERE wday>=2 AND wday <=6 AND airports = 'EWR'AND pickup_name = 'Midtown'
+                                  GROUP BY hour
+                                  ORDER BY hour")
+
+midtown_to_airport <- merge(midtown_to_LGA_time_hour, midtown_to_JFK_time_hour, by= "hour", all = TRUE)
+midtown_to_airport <- merge(midtown_to_airport, midtown_to_EWR_time_hour, by= "hour", all = TRUE)
+colnames(midtown_to_airport) <- c("hour", "LGA", "JFK", "EWR")
+mlt2 <- melt(midtown_to_airport, id.vars="hour", value.name="time", variable.name="Airports")
+midtown_to_airport_plot <- ggplot(data=mlt2, aes(x=hour, y=time, group = Airports, colour = Airports)) +geom_line() + geom_point(size=4, shape=21, fill="white")
+png("midtown_to_airport_plot .png", w=800, h=600)
+midtown_to_airport_plot 
+dev.off()
+```
+
+Where do people stay in town when they come to NYC? The top three hotels that people go to are Hudson New York, Ace Hotel, and Maritime Hotel. However, an interesting observation is that trips from airport to neighborhoods are actually much larger than trips from airport to hotels. In the dataset, during the weekdays, there were only 250 trips from airports to hotels, out of 14,498 total trips in a week from airport. Only on Friday, there were already about 1,966 trips from airport to neighborhoods. More investigations are needed here. Some possibile explanations could be that travellers would pick hotels outside New York City, or that travellers are most likely residents of NYC, or that many people live in AirBnb rather than hotels, or that the hotel data is simply not complete, which is highly likely. And this may be a problem with using OSM data, so I need to find a more complete data sets for the hotel coordinates. Top counts of the neighborhoods where people travel from the airports to are Midtown (which is very likely where the hotels are), Upper East, and Upper West. The 4th is Fort Green in Brooklyn. Then it is Gramercy, Chelsea, and Clinton. 
+
+Trips from hotel to airport are a little more than the other way around. About 335 trips were made from hotels to airports. Top pickup locations are Marriott Eastside, W, and Milleseme. But still, much more trips were made from neighborhoods then hotels. The top neighborhoods as the pickup locations on Monday are Midtown (again, probably are the hotels), 473 trips, Upper East, Gramercy, Garment District, Upper West, Chelsea, and so on.
+
+```{r echo=FALSE, message=FALSE, warning=FALSE, hotel}
+hotel_coord <- sqldf("SELECT  a.lat, a.lon, a.id, merge_nodes_tags.value
+                     FROM (SELECT DISTINCT merge_nodes_tags.id, merge_nodes_tags.lat, merge_nodes_tags.lon
+                     FROM merge_nodes_tags
+                     WHERE merge_nodes_tags.key = 'tourism'
+                     AND merge_nodes_tags.value = 'hotel') as a, merge_nodes_tags
+                     WHERE a.id = merge_nodes_tags.id AND
+                     merge_nodes_tags.key = 'name'
+                     ")
+
+trips_to_hotel <- sqldf("SELECT a.id, trips.pickup_longitude, trips.pickup_latitude, trips.RideID, trips.wday, trips.hour, a.value
+                        FROM hotel_coord as a, taxi_sample as trips 
+                        WHERE trips.dropoff_longitude<=a.lon+0.00015 AND trips.dropoff_longitude>=a.lon-0.00015 AND trips.dropoff_latitude <=a.lat+0.00034 AND trips.dropoff_latitude>=a.lat-0.00034
+                        ")
+
+trips_from_hotel <- sqldf("SELECT a.id, trips.dropoff_longitude, trips.dropoff_latitude, trips.RideID, trips.wday, trips.hour, a.value
+                          FROM hotel_coord as a, taxi_sample as trips 
+                          WHERE trips.pickup_longitude<=a.lon+0.00015 AND trips.pickup_longitude>=a.lon-0.00015 AND trips.pickup_latitude <=a.lat+0.00034 AND trips.pickup_latitude>=a.lat-0.00034
+                          ")
+
+trips_to_hotel_count <- sqldf("SELECT a.id, a.value, count(*) as num
+                              FROM hotel_coord as a, taxi_sample as trips 
+                              WHERE trips.dropoff_longitude<=a.lon+0.00015 AND trips.dropoff_longitude>=a.lon-0.00015 AND trips.dropoff_latitude <=a.lat+0.00034 AND trips.dropoff_latitude>=a.lat-0.00034
+                              GROUP BY a.id
+                              ORDER BY num DESC
+                              ")
+
+#From airport to hotel
+trips_from_airport_to_hotel <- sqldf("SELECT *
+                                     FROM trips_to_hotel, trips_from_airport
+                                     WHERE trips_to_hotel.RideID = trips_from_airport.RideID")
+trips_from_airport_to_hotel <- trips_from_airport_to_hotel[,-4]
+
+trip_f_a_t_h_count <- sqldf("SELECT airports, wday, count(*) as num
+                            FROM trips_from_airport_to_hotel
+                            GROUP BY airports, wday
+                            ORDER BY airports, wday")
+trip_f_a_t_h_count2 <- sqldf("SELECT value, airports, count(*) as num
+                             FROM trips_from_airport_to_hotel
+                             GROUP BY value, airports
+                             ORDER BY num DESC")
+
+#where do people go on Friday after coming back from the airport?
+
+trips_from_airport_to_nbh_Fri_count <- sqldf("SELECT dropoff_name, wday, count(*) as num 
+                                             FROM trips_from_airport
+                                             WHERE wday = 6
+                                             GROUP BY dropoff_name
+                                             ORDER BY num DESC
+                                             ")
+sum_trip_from_airport <- sum(trips_from_airport_to_nbh_Fri_count$num)
+trips_from_airport_to_nbh_Fri_count$percent <- trips_from_airport_to_nbh_Fri_count$num/sum_trip_from_airport*100.00
+
+#trips from hotel to airport
+trips_from_hotel_to_airport <- sqldf("SELECT *
+                                     FROM trips_from_hotel, trips_to_airport
+                                     WHERE trips_from_hotel.RideID = trips_to_airport.RideID")
+trips_from_hotel_to_airport <- trips_from_hotel_to_airport[,-4]
+trip_f_h_t_a_count <- sqldf("SELECT airports, wday, count(*) as num
+                            FROM trips_from_hotel_to_airport
+                            GROUP BY airports, wday
+                            ORDER BY airports, wday")
+trip_f_h_t_a_count2 <- sqldf("SELECT value, airports, count(*) as num
+                             FROM trips_from_hotel_to_airport
+                             GROUP BY value, airports
+                             ORDER BY num DESC")
+
+trips_from_nbh_to_airport_Mon_count <- sqldf("SELECT pickup_name, wday, count(*) as num 
+                                             FROM trips_to_airport
+                                             WHERE wday = 2
+                                             GROUP BY pickup_name
+                                             ORDER BY num DESC
+                                             ")
+sum_trip_to_airport_Mon <- sum(trips_from_nbh_to_airport_Mon_count$num)
+trips_from_nbh_to_airport_Mon_count$percent <- trips_from_nbh_to_airport_Mon_count$num/sum_trip_to_airport_Mon*100.00
+```
+
+Where do people go out on Friday night? The dropoff locations do not seem perfectly co-locate with the restaurants. This could be due to that the OSM data is incomplete. This will need further investigations, including, but not limited to, analyzing data from other weeks. 
+
+```{r echo=FALSE, message=FALSE, warning=FALSE,  data_plotting3}
+
+m <- get_map(location = c(lon = (min_lon+max_lon)/2, lat = (min_lat+max_lat)/2),zoom = 12, maptype='toner', source="stamen")
+
+basemap <- ggmap(m)
+
+Friday_night1 <- basemap + geom_point(data=subset(taxi_sample, taxi_sample$hour>=18 & taxi_sample$hour<=20&taxi_sample$wday==6), aes(x=dropoff_longitude, y=dropoff_latitude), size=0.02,  color= "red", alpha = 0.05) +labs(x ="Friday Night Dropoffs")+theme(axis.title.y=element_blank(), axis.title.x = element_text(size = rel(1)))+geom_point(data=restaurant_coord, aes(x=lon.x,y=lat.x),size = 0.5, alpha = 0.3, color = "blue")
+
+Friday_night_leveled <- basemap+stat_density2d(aes(x = dropoff_longitude, y = dropoff_latitude, fill= ..level..), data=subset(taxi_sample, taxi_sample$hour>=18 & taxi_sample$hour<=20&taxi_sample$wday==6),geom="polygon", alpha=0.3)
+Friday_night_leveled  <- Friday_night_leveled  + scale_fill_gradient(low = "yellow", high = "red")+geom_point(data=restaurant_coord, aes(x=lon.x,y=lat.x),size = 0.5, alpha = 0.3, color = "blue")
+
+png("Friday_night_goout1.png", w=600, h=600)
+Friday_night1
+dev.off()
+
+png("Friday_night_goout2.png", w=600, h=600)
+Friday_night_leveled 
+dev.off()
+```
+
+On Friday night, top neighborhoods as the pickup places to go to restaurants are Midtown, Gramercy, Upper East Side, Chelsea, and Upper West Side. The bar charts that show trips to restaurants by hour on Wednesday and Friday show that more people go to resstaurants, especially during late hours. The data also shows the top dropoff neighborhoods from restaurants. On weedays, top dropoff nieghborhoods are Midtown, Upper East, Upper West, Gramercy, Chelsea, etc., and in addition to these, East Village, Greenwich Village on weekends. 
+
+Is it true that the city never sleep? Partially true. After comparing the number of trips made to restaurants by hour on Wednesday, Friday, and Saturday, I found that although most people go to restaurants for dinner, they only stayed late on Friday and Saturday. A map below shows Friday late night (after ten) pickups from restauants. On Saturday morning, most people sleep in until 10 o'clock. People may also stay late on Saturday night. On Sunday, much fewer people go to restaurants and even if they go, they do not tend to stay late. 
+
+```{r echo=FALSE, message=FALSE, warning=FALSE, restaurant}
+#trips from and to restaurants
+#restaurants 2579 obs;
+trip_to_restaurants <- sqldf("SELECT a.id, trips.pickup_latitude, trips.pickup_longitude, trips.pickup_name, trips.pickup_city, trips.RideID, trips.wday, trips.hour
+FROM restaurant_coord as a, taxi_sample as trips 
+WHERE trips.dropoff_longitude<=a.[lon.x]+0.00015 AND trips.dropoff_longitude>=a.[lon.x]-0.00015 AND trips.dropoff_latitude <=a.[lat.x] + 0.00034 AND trips.dropoff_latitude>=a.[lat.x] - 0.00034")
+
+trip_to_restaurants_count_by_nbh_Fri_night <- sqldf("SELECT pickup_name, count(*) as num
+FROM trip_to_restaurants
+WHERE wday = 6 AND hour >= 17 AND hour <= 20
+GROUP BY pickup_name
+ORDER BY num DESC")
+
+trip_to_restaurants_count_by_wday <- sqldf("SELECT wday, count(*) as num
+FROM trip_to_restaurants
+GROUP BY wday
+ORDER BY wday")
+ggplot(data = trip_to_restaurants_count_by_wday, aes(x = factor(wday), y = num)) + geom_bar(stat = "identity",color = "red", fill = "red", alpha = 0.5)+geom_text(aes(label=comma(num)), vjust=-0.25, size = 3) + scale_x_discrete(labels=c("1" = "Sunday", "2" = "Monday", "3" = "Tuesday", "4" = "Wednesday", "5" = "Thursday", "6" = "Friday", "7" = "Saturday")) + labs(x = "Weekdays", y = "number of trips to restaurants", title = "Number of Trips to Restaurants by Weekdays")
+
+trip_to_restaurants_count_by_hourWed <- sqldf("SELECT hour, count(*) as num
+FROM trip_to_restaurants
+WHERE wday == 4
+GROUP BY hour")
+plot_trip_to_restaurants_count_by_hourWed <- ggplot(data = trip_to_restaurants_count_by_hourWed, aes(x = factor(hour), y = num)) + geom_bar(stat = "identity",color = "red", fill = "red", alpha = 0.5)+geom_text(aes(label=comma(num)), vjust=-0.25, size = 3)+ labs(y = "number of trips to restaurants", title = "Number of Trips to Restaurants by Hour on Wednesday")
+
+trip_to_restaurants_count_by_hourFri <- sqldf("SELECT hour, count(*) as num
+FROM trip_to_restaurants
+WHERE wday == 6
+GROUP BY hour")
+plot_trip_to_restaurants_count_by_hourFri <- ggplot(data = trip_to_restaurants_count_by_hourFri, aes(x = factor(hour), y = num)) + geom_bar(stat = "identity",color = "red", fill = "red", alpha = 0.5)+geom_text(aes(label=comma(num)), vjust=-0.25, size = 3)+ labs(y = "number of trips to restaurants", title = "Number of Trips to Restaurants by Hour on Friday")
+plot_trip_to_restaurant_WEDFRI<-grid.arrange(plot_trip_to_restaurants_count_by_hourWed,plot_trip_to_restaurants_count_by_hourFri, ncol=1)
+png("plot_trip_to_restaurant_WEDFRI.png", w=800, h=600)
+plot_trip_to_restaurant_WEDFRI
+dev.off()
+
+
+trip_from_restaurants <- sqldf("SELECT a.id, trips.dropoff_latitude, trips.dropoff_longitude, trips.dropoff_name, trips.dropoff_city, trips.RideID, trips.wday, trips.hour
+FROM restaurant_coord as a, taxi_sample as trips 
+WHERE trips.pickup_longitude<=a.[lon.x]+0.00015 AND trips.pickup_longitude>=a.[lon.x]-0.00015 AND trips.pickup_latitude <=a.[lat.x] + 0.00034 AND trips.pickup_latitude>=a.[lat.x] - 0.00034")
+
+trip_from_restaurants_count_by_nbh_Tue <- sqldf("SELECT dropoff_name, count(*) as num
+FROM trip_from_restaurants
+WHERE wday == 3
+GROUP BY dropoff_name
+ORDER by num DESC
+LIMIT 20")
+trip_from_restaurants_count_by_nbh_Fri <- sqldf("SELECT dropoff_name, count(*) as num
+FROM trip_from_restaurants
+WHERE wday == 6
+GROUP BY dropoff_name
+ORDER by num DESC
+LIMIT 20")
+trip_from_restaurants_count_by_nbh_Sat <- sqldf("SELECT dropoff_name, count(*) as num
+FROM trip_from_restaurants
+WHERE wday == 7
+GROUP BY dropoff_name
+ORDER by num DESC
+LIMIT 20")
+
+
+trip_from_restaurant_count_by_hour_wday <- sqldf("SELECT wday, hour, count(*) as num
+FROM trip_from_restaurants
+GROUP BY wday, hour
+ORDER by wday, hour")
+
+trip_from_restaurant_count_by_hour_Fri <- ggplot(data = subset(trip_from_restaurant_count_by_hour_wday, trip_from_restaurant_count_by_hour_wday$wday ==6), aes(x = hour, y = num)) + geom_bar(stat = "identity",color = "red", fill = "red", alpha = 0.5)+geom_text(aes(label=comma(num)), vjust=-0.25, size = 3)+labs(y = "number of trips from restaurants", title = "Number of Trips from Restaurants by Hour on Friday")
+
+trip_from_restaurant_count_by_hour_Sat <- ggplot(data = subset(trip_from_restaurant_count_by_hour_wday, trip_from_restaurant_count_by_hour_wday$wday ==7), aes(x = hour, y = num)) + geom_bar(stat = "identity",color = "red", fill = "red", alpha = 0.5)+geom_text(aes(label=comma(num)), vjust=-0.25, size = 3)+labs(y = "number of trips from restaurants", title = "Number of Trips from Restaurants by Hour on Saturday")
+
+trip_from_restaurant_count_by_hour_Wed <- ggplot(data = subset(trip_from_restaurant_count_by_hour_wday, trip_from_restaurant_count_by_hour_wday$wday ==4), aes(x = hour, y = num)) + geom_bar(stat = "identity",color = "red", fill = "red", alpha = 0.5)+geom_text(aes(label=comma(num)), vjust=-0.25, size = 3)+labs(y = "number of trips from restaurants", title = "Number of Trips from Restaurants by Hour on Wednesday")
+
+trip_from_restaurant_count_by_hour_Sun <- ggplot(data = subset(trip_from_restaurant_count_by_hour_wday, trip_from_restaurant_count_by_hour_wday$wday ==1), aes(x = hour, y = num)) + geom_bar(stat = "identity",color = "red", fill = "red", alpha = 0.5)+geom_text(aes(label=comma(num)), vjust=-0.25, size = 3)+labs(y = "number of trips from restaurants", title = "Number of Trips from Restaurants by Hour on Sunday")
+
+
+plot_trip_from_restaurants_wday_comparison <- grid.arrange(trip_from_restaurant_count_by_hour_Wed , trip_from_restaurant_count_by_hour_Fri, trip_from_restaurant_count_by_hour_Sat, trip_from_restaurant_count_by_hour_Sun, ncol=1)
+png("plot_trip_from_restaurants_wday_comparison.png", w=800, h=600)
+plot_trip_from_restaurants_wday_comparison
+dev.off()
+
+
+#cuisines
+cuisines <- sqldf("SELECT merge_nodes_tags.value, count(*) 
+FROM merge_nodes_tags, (SELECT DISTINCT(id) FROM merge_nodes_tags WHERE value = 'restaurant') as a
+WHERE merge_nodes_tags.id = a.id
+AND merge_nodes_tags.key = 'cuisine'
+GROUP BY merge_nodes_tags.value
+ORDER BY count(*) DESC
+")
+
+chinese_restaurant_coord <- sqldf("SELECT merge_nodes_tags.lat, merge_nodes_tags.lon, merge_nodes_tags.value, merge_nodes_tags.id
+FROM merge_nodes_tags, (SELECT DISTINCT(id) FROM merge_nodes_tags WHERE value = 'restaurant') as a
+WHERE merge_nodes_tags.id = a.id 
+AND merge_nodes_tags.key = 'cuisine'
+AND merge_nodes_tags.value = 'chinese'
+")
+
+french_restaurant_coord <- sqldf("SELECT merge_nodes_tags.lat, merge_nodes_tags.lon, merge_nodes_tags.value, merge_nodes_tags.id
+FROM merge_nodes_tags, (SELECT DISTINCT(id) FROM merge_nodes_tags WHERE value = 'restaurant') as a
+WHERE merge_nodes_tags.id = a.id 
+AND merge_nodes_tags.key = 'cuisine'
+AND merge_nodes_tags.value = 'french'
+")
+
+basemap + geom_point(data = french_restaurant_coord, aes( x = lon, y = lat), size = 0.5, color = "red")
+trip_to_french <- sqldf("SELECT a.id, count(*) as num
+FROM french_restaurant_coord as a, taxi_sample as trips 
+WHERE trips.dropoff_longitude<=a.lon+0.00015 AND trips.dropoff_longitude>=a.lon-0.00015 AND trips.dropoff_latitude <=a.lat + 0.00034 AND trips.dropoff_latitude>=a.lat - 0.00034
+GROUP BY a.id
+ORDER by num DESC")
+trip_from_french <- sqldf("SELECT a.id, count(*) as num
+FROM french_restaurant_coord as a, taxi_sample as trips 
+WHERE trips.pickup_longitude<=a.lon+0.00015 AND trips.pickup_longitude>=a.lon-0.00015 AND trips.pickup_latitude <=a.lat + 0.00034 AND trips.pickup_latitude>=a.lat - 0.00034
+GROUP BY a.id
+ORDER by num DESC")
+#happened to be a restaurant called Balthazar, very high reviewed
+
+basemap + geom_point(data = chinese_restaurant_coord, aes( x = lon, y = lat), size = 0.5, color = "red")
+trip_to_chinese <- sqldf("SELECT a.id, count(*) as num
+FROM chinese_restaurant_coord as a, taxi_sample as trips 
+WHERE trips.dropoff_longitude<=a.lon+0.00015 AND trips.dropoff_longitude>=a.lon-0.00015 AND trips.dropoff_latitude <=a.lat + 0.00034 AND trips.dropoff_latitude>=a.lat - 0.00034
+GROUP BY a.id
+ORDER by num DESC")
+#Phoenix Garden on E40th St on the list
+
+trip_from_chinese <- sqldf("SELECT a.id, count(*) as num
+FROM chinese_restaurant_coord as a, taxi_sample as trips 
+WHERE trips.pickup_longitude<=a.lon+0.00015 AND trips.pickup_longitude>=a.lon-0.00015 AND trips.pickup_latitude <=a.lat + 0.00034 AND trips.pickup_latitude>=a.lat - 0.00034
+GROUP BY a.id
+ORDER by num DESC")
+```
+
+
+```{r echo=FALSE, message=FALSE, warning=FALSE,  data_plotting4}
+
+Friday_night2_leveled <- basemap+stat_density2d(aes(x = pickup_longitude, y = pickup_latitude, fill= ..level..), data=subset(taxi_sample, taxi_sample$hour>=22&taxi_sample$wday==6),geom="polygon", alpha=0.3)
+Friday_night2_leveled  <- Friday_night2_leveled  + scale_fill_gradient(low = "yellow", high = "red")+geom_point(data=restaurant_coord, aes(x=lon.x,y=lat.x),size = 0.5, alpha = 0.3, color = "blue")
+
+
+png("Friday_late_night_pickup2.png", w=600, h=600)
+Friday_night2_leveled 
+dev.off()
+```
+
+Other ways to explore the data: Who pay the highest tip? In general, people take a cab within Manhattan tip higher. High tippers tend to be those who go to Times Square and Midtown. They could be visitors or financial bankers. Besides, wealthy people living in Upper East seem to tip more as well.
+
+```{r echo=FALSE, message=FALSE, warning=FALSE,  data_plotting6}
+taxi_sample$tip_percentage<-ifelse(taxi_sample$fare_amount!=0 & !is.na(taxi_sample$tip_amount) & !is.na(taxi_sample$fare_amount), taxi_sample$tip_amount/taxi_sample$fare_amount, NA)
+
+summary(taxi_sample$tip_percentage)
+
+quantile(subset(taxi_sample$tip_percentage, !is.na(taxi_sample$tip_percentage)), 0.9)
+
+
+plot_high_tip <- basemap+ geom_point(data = subset(taxi_sample,  taxi_sample$hour>=19 & taxi_sample$hour<=20 &taxi_sample$tip_percentage>=0.2729412), aes(x=dropoff_longitude, y=dropoff_latitude), size=0.02, color= "red", alpha = 0.2) +
+labs(x = "High Tips Dropoffs")+theme(axis.title.y=element_blank(), axis.title.x = element_text(size = rel(1)))
+png("plot_high_tip.png", w=600, h=600)
+plot_high_tip 
+dev.off()
+
+
+high_tip_leveled <- basemap+stat_density2d(aes(x=dropoff_longitude, y=dropoff_latitude, fill= ..level..), data=subset(taxi_sample,  taxi_sample$hour>=19 & taxi_sample$hour<=20 &taxi_sample$tip_percentage>=0.2729412),geom="polygon", alpha=0.3)
+high_tip_leveled  <- high_tip_leveled  + scale_fill_gradient(low = "yellow", high = "red")
+png("plot_high_tip2.png", w=600, h=600)
+high_tip_leveled 
+dev.off()
+
+```

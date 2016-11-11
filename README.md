@@ -59,7 +59,7 @@ Let's see where the cab-taking working New Yorkers are coming from and going to 
 
 Below are queries that show the neighborhoods as pick-up or drop-off locations that are with the highest numbers of trips. Midtown, Upper East, Upper West, Gramercy, which are high social-economic well-off neighborhoods, dominate most of the trips. 
 
-Top 10 Pickup Neighborhoods among all Trips
+### Top 10 Pickup Neighborhoods among all Trips
 ```
           pickup_name             pickup_city    percent
 1             Midtown New York City-Manhattan 16.3299766
@@ -73,7 +73,8 @@ Top 10 Pickup Neighborhoods among all Trips
 9        Murray Hill New York City-Manhattan  3.3705868
 10            Clinton New York City-Manhattan  2.8678539
 ```
-Top 10 Dropoff Neighborhoods among all Trips
+
+### Top 10 Dropoff Neighborhoods among all Trips
 ```
          dropoff_name            dropoff_city   percent
 1             Midtown New York City-Manhattan 14.941878
@@ -87,7 +88,7 @@ Top 10 Dropoff Neighborhoods among all Trips
 9       East Village New York City-Manhattan  3.230951
 10            Clinton New York City-Manhattan  3.050306
 ```
-Top 10 Pickup Neighborhoods among all Trips during Weekday Morning (5am-9am)
+### Top 10 Pickup Neighborhoods among all Trips during Weekday Morning (5am-9am)
 ```
           pickup_name             pickup_city   percent
 1     Upper East Side New York City-Manhattan 2.5379341
@@ -101,7 +102,7 @@ Top 10 Pickup Neighborhoods among all Trips during Weekday Morning (5am-9am)
 9            Clinton New York City-Manhattan 0.4821210
 10       East Village New York City-Manhattan 0.3057363
 ```
-Top 10 Dropoff Neighborhoods among all Trips during Weekday Morning (5am-9am)
+### Top 10 Dropoff Neighborhoods among all Trips during Weekday Morning (5am-9am)
 ```
           dropoff_name            dropoff_city   percent
 1              Midtown New York City-Manhattan 3.6419843
@@ -118,7 +119,7 @@ Top 10 Dropoff Neighborhoods among all Trips during Weekday Morning (5am-9am)
 Do people take cab to subway stations? Yes, they do. And you probably would expect that more people that live *outside* Manhattan do so. However, the numbers show that most people who do so lives *in* Manhattan. Or another way to put this could be that people from these neighborhoods would rather take a taxi than take the subway. 
 
 
-Top 10 Neighborhoods that Take Cab to Destinations near (half block from) Subway Entrances 
+### Top 10 Neighborhoods that Take Cab to Destinations near (half block from) Subway Entrances 
 ```
                 pickup_name             pickup_city   num
 1           Upper East Side New York City-Manhattan 18564
@@ -144,7 +145,7 @@ And I map three neighborhoods (Upper East, Chelsea, and Astoria in Queens) that 
 ### Taxi Trips from Astoria, Queens to Subway Entrances on Weekdays during Morning (7-9 am)
 ![GitHub Logo](images/Astoria_to_subway_map.png)
 
-Top 10 Neighborhoods that Take Cab from Destinations near (half block from) Subway Entrances 
+### Top 10 Neighborhoods that Take Cab from Destinations near (half block from) Subway Entrances 
 
 ```
                dropoff_name            dropoff_city   num

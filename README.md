@@ -187,7 +187,8 @@ Most trips to airports begin from Midtown and Lower Manhattan. I caculated the m
 
 #### From Midtown to EWR
 
-```   wday hour     time
+```   
+wday hour     time
 1     2    4 31.60000
 2     2    5 39.36667
 3     2    6 34.18333

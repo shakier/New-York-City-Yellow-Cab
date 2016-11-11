@@ -172,30 +172,153 @@ Top 10 Neighborhoods that Take Cab from Destinations near (half block from) Subw
 ![GitHub Logo](three_nbh_wday_to_subway_counts_plot.png)
 
 
+Airports! Monday sees the highest trips from three major airports near New York City (JFK, LGA, EWR). Thursday and Friday see the highest trips leaving the city. 
+
+![GitHub Logo](plot_airport_trips.png)
+
+Most trips to airports begin from Midtown and Lower Manhattan. I caculated the median time needed during the weekdays from each neighborhoods to each airports and specially, and then I pick Midtown as an example to show the median time for every hour from Midtown to each airports. This information can be used for business travellers. 
+
+![GitHub Logo](midtown_to_airport_plot.png)
+
+### A Sample of the Information from Neighborhood to Airport by Hours by Weekdays
+#### From Midtown to EWR
+```   wday hour     time
+1     2    4 31.60000
+2     2    5 39.36667
+3     2    6 34.18333
+4     2    7 34.53333
+5     2    8 36.55833
+6     2    9 49.63333
+7     2   10 37.96667
+8     2   11 31.60000
+9     2   12 44.86667
+10    2   13 51.00000
+11    2   14 47.28333
+12    2   15 47.65833
+13    2   16 56.98333
+14    2   17 48.24167
+15    2   18 60.66667
+16    2   19 35.50833
+17    3    3 34.93333
+18    3    4 29.13333
+19    3    6 26.71667
+20    3    8 35.08333
+21    3    9 42.26667
+22    3   10 38.08333
+23    3   11 42.64167
+24    3   12 33.28333
+......
+```
+
+Where do people stay in town when they come to NYC? The top three hotels that people go to are Hudson New York, Ace Hotel, and Maritime Hotel. However, an interesting observation is that trips from airport to neighborhoods are actually much larger than trips from airport to hotels. In the dataset, during the weekdays, there were only 250 trips from airports to hotels, out of 14,498 total trips in a week from airport. Only on Friday, there were already about 1,966 trips from airport to neighborhoods. More investigations are needed here. Some possibile explanations could be that travellers would pick hotels outside New York City, or that travellers are most likely residents of NYC, or that many people live in AirBnb rather than hotels, or that the hotel data is simply not complete, which is highly likely. And this may be a problem with using OSM data, so I need to find a more complete data sets for the hotel coordinates. Top counts of the neighborhoods where people travel from the airports to are Midtown (which is very likely where the hotels are), Upper East, and Upper West. The 4th is Fort Green in Brooklyn. Then it is Gramercy, Chelsea, and Clinton. 
+
+Trips from hotel to airport are a little more than the other way around. About 335 trips were made from hotels to airports. Top pickup locations are Marriott Eastside, W, and Milleseme. But still, much more trips were made from neighborhoods then hotels. The top neighborhoods as the pickup locations on Monday are Midtown (again, probably are the hotels), 473 trips, Upper East, Gramercy, Garment District, Upper West, Chelsea, and so on.
+
+### Top 10 Hotels People Go To From Airports 
+```
+                                                              value airports num
+1                                                         Ace Hotel      JFK  20
+2                                                   Hudson New York      JFK  13
+3                                                    Maritime Hotel      JFK   9
+4                   Residence Inn New York Manhattan / Central Park      JFK   9
+5                 The Lexington New York City, Autograph Collection      JFK   7
+6                           Renaissance New York Times Square Hotel      JFK   6
+7                                                  Wellington Hotel      JFK   6
+8                                                       Hampton Inn      JFK   5
+9                                                 Marriott Eastside      JFK   5
+10                                                                W      JFK   5
+```
+
+### Top 10 Hotels where Taxi Pick up to Airports 
+```
+                                                value airports num
+1                                   Marriott Eastside      LGA  13
+2                                                   W      LGA  11
+3                                           Milleseme      LGA  10
+4     Residence Inn New York Manhattan / Central Park      LGA   9
+5                                              Hilton      LGA   7
+6                                        Ritz-Carlton      LGA   7
+7                                           Ace Hotel      JFK   6
+8             Renaissance New York Times Square Hotel      LGA   6
+9                                 The Kitano New York      JFK   6
+10  The Lexington New York City, Autograph Collection      LGA   6
+```
 
 
+### Which Neighborhood do people go on Friday after Coming back from the Airports? (Top 10)
+```
+               dropoff_name wday num    percent
+1                   Midtown    6 249 12.6653103
+2           Upper East Side    6 125  6.3580875
+3           Upper West Side    6 109  5.5442523
+4                Fort Green    6  59  3.0010173
+5                  Gramercy    6  59  3.0010173
+6                   Chelsea    6  56  2.8484232
+7                   Clinton    6  50  2.5432350
+8               Murray Hill    6  45  2.2889115
+9        Bedford-Stuyvesant    6  39  1.9837233
+10             Williamsburg    6  37  1.8819939
+```
 
+### Which Neighborhood do people come from on Monday before they go to the Airports? (Top 10)
+```
+                pickup_name wday num     percent
+1                   Midtown    2 473 26.93621868
+2           Upper East Side    2 122  6.94760820
+3                  Gramercy    2 113  6.43507973
+4          Garment District    2 109  6.20728929
+5           Upper West Side    2 100  5.69476082
+6                   Chelsea    2  92  5.23917995
+7               Murray Hill    2  90  5.12528474
+8                   Clinton    2  57  3.24601367
+9        Financial District    2  37  2.10706150
+10             East Village    2  32  1.82232346
+```
 
-Where do people go out on Friday night? To my surprise, the dropoff locations do not seem perfectly co-locate with the restaurants. This could be due to that the OSM data is incomplete. Or, people simply do not take cabs to restaurants. But anyway, this will need further investigations, including, but not limited to, analyzing data from other weeks. 
+On Friday night, top neighborhoods as the pickup places to go to restaurants are Midtown, Gramercy, Upper East Side, Chelsea, and Upper West Side. The bar charts show trips to restaurants by hour on Wednesday and Friday. The patterns are similar except that that more people go to restaurants for dinner and leave later. The data also shows the top dropoff neighborhoods from restaurants. On weedays, top dropoff nieghborhoods are Midtown, Upper East, Upper West, Gramercy, Chelsea, etc., and in addition to these, East Village, Greenwich Village on weekends. 
 
+![GitHub Logo](plot_trip_to_restaurant_WEDFRI.png)
 
-![GitHub Logo](images/Friday_night_goout1.png)
+### Top 10 Pick-up Neighborhoods to Restaurants on Friday Night (5-8 pm)
+```
+                pickup_name  num
+1                   Midtown 2044
+2                  Gramercy 1239
+3           Upper East Side 1228
+4                   Chelsea  972
+5           Upper West Side  868
+6          Garment District  694
+7         Greenwich Village  667
+8              East Village  475
+9               Murray Hill  432
+10                  Clinton  396
+11             West Village  387
+```
+### Top 10 Drop-off Neighborhoods from Restaurants on Friday Night (after 9 pm)
+```
+               dropoff_name  num
+1                   Midtown 1171
+2           Upper East Side 1040
+3                  Gramercy  986
+4           Upper West Side  917
+5              East Village  836
+6                   Chelsea  805
+7         Greenwich Village  642
+8          Garment District  519
+9                   Clinton  458
+10          Lower East Side  444
+```
+Friday night dropoff locations do not seem perfectly co-locate with the restaurants. This could be due to that the OSM data is incomplete. Or, people simply do not take cabs to restaurants. But anyway, this will need further investigations, including, but not limited to, analyzing data from other weeks. 
 
 ![GitHub Logo](images/Friday_night_goout2.png)
 
-Then, would New Yorkers be taking cabs in late Friday night? Yes, more New Yorkers are taking cabs after 10 o'clock Friday night. 
+Is it true that the city never sleep? Partially true. After comparing the number of trips made to restaurants by hour on Wednesday, Friday, and Saturday, I found that although most people go to restaurants for dinner, they only stayed late on Friday and Saturday. A map below shows Friday late night (after ten) pickups from restauants. On Saturday morning, most people sleep in until 10 o'clock. People may also stay late on Saturday night. On Sunday, much fewer people go to restaurants and even if they go, they do not tend to stay late. 
 
-![GitHub Logo](images/Friday_late_night_pickup.png)
 
-![GitHub Logo](images/Friday_late_night_pickup2.png)
+![GitHub Logo](plot_trip_from_restaurants_wday_comparison.png)
 
-Now, let's take a look at the theatre district on Friday night. The map shows where people go after leaving the theatre district on Friday night. Most trips are in Manhattan. Very few go to Queens. And even fewer to other areas. But the data points are too small at this point, so I will need more data to investigate this question. 
-
-![GitHub Logo](images/theatre_goers_friday_night.png)
-
+### Other ways to explore the data
 Who are the riders that pay the highest tip? In general, people take a cab within Manhattan tip higher. High tippers tend to be those who go to Times Square and Midtown. They could be visitors or financial bankers. Besides, wealthy people living in Upper East seem to tip more as well.
-
-![GitHub Logo](images/plot_high_tip.png)
 
 ![GitHub Logo](images/plot_high_tip2.png)
 

@@ -319,7 +319,6 @@ Friday night dropoff locations do not seem perfectly co-locate with the restaura
 
 Is it true that the city never sleep? Partially true. After comparing the number of trips made to restaurants by hour on Wednesday, Friday, and Saturday, I found that although most people go to restaurants for dinner, they only stayed late on Friday and Saturday. A map below shows Friday late night (after ten) pickups from restauants. On Saturday morning, most people sleep in until 10 o'clock. People may also stay late on Saturday night. On Sunday, much fewer people go to restaurants and even if they go, they do not tend to stay late. 
 
-
 ![GitHub Logo](images/plot_trip_from_restaurants_wday_comparison.png)
 
 ### Other ways to explore the data

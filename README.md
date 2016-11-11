@@ -34,7 +34,7 @@ I realize that the majority of New Yorkers may use public transit such as subway
 
 There are 2,323,898 trip records in the data sample, which cover all trips from 2016-01-24 to 2016-01-30. Counting trips by weekdays, we find out that the trip numbers increase sequentially from Sunday to Saturday. Sunday has the least trip number, which is 157,344, and Saturday has the largest trip number, 427,577.
 
-![GitHub Logo](../image/trip_by_weekday.png)
+![GitHub Logo](../images/trip_by_weekday.png)
 
 Looking the data by hours, we find out that there are two peak hours. Unsurprisingly, they 
 overlap with commute hours, 8 in the morning and 19 in the evening. Interestingly, more people take a cab to go home than go to work.

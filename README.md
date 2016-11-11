@@ -211,8 +211,6 @@ Most trips to airports begin from Midtown and Lower Manhattan. I caculated the m
 23    3   11 42.64167
 24    3   12 33.28333
 ```
-......
-
 
 Where do people stay in town when they come to NYC? The top three hotels that people go to are Hudson New York, Ace Hotel, and Maritime Hotel. However, an interesting observation is that trips from airport to neighborhoods are actually much larger than trips from airport to hotels. In the dataset, during the weekdays, there were only 250 trips from airports to hotels, out of 14,498 total trips in a week from airport. Only on Friday, there were already about 1,966 trips from airport to neighborhoods. More investigations are needed here. Some possibile explanations could be that travellers would pick hotels outside New York City, or that travellers are most likely residents of NYC, or that many people live in AirBnb rather than hotels, or that the hotel data is simply not complete, which is highly likely. And this may be a problem with using OSM data, so I need to find a more complete data sets for the hotel coordinates. Top counts of the neighborhoods where people travel from the airports to are Midtown (which is very likely where the hotels are), Upper East, and Upper West. The 4th is Fort Green in Brooklyn. Then it is Gramercy, Chelsea, and Clinton. 
 

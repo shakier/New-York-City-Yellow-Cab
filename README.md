@@ -239,7 +239,7 @@ Trips from hotel to airport are a little more than the other way around. About 3
 10                                                                W      JFK   5
 ```
 
-### Top 10 Hotels where Taxi Pick up to Airports 
+#### Top 10 Hotels where Taxi Pick up to Airports 
 ```
                                                 value airports num
 1                                   Marriott Eastside      LGA  13
@@ -255,7 +255,7 @@ Trips from hotel to airport are a little more than the other way around. About 3
 ```
 
 
-### Which Neighborhood do people go on Friday after Coming back from the Airports? (Top 10)
+#### Which Neighborhood do people go on Friday after Coming back from the Airports? (Top 10)
 ```
                dropoff_name wday num    percent
 1                   Midtown    6 249 12.6653103
@@ -270,7 +270,7 @@ Trips from hotel to airport are a little more than the other way around. About 3
 10             Williamsburg    6  37  1.8819939
 ```
 
-### Which Neighborhood do people come from on Monday before they go to the Airports? (Top 10)
+#### Which Neighborhood do people come from on Monday before they go to the Airports? (Top 10)
 ```
                 pickup_name wday num     percent
 1                   Midtown    2 473 26.93621868

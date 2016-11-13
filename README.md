@@ -57,9 +57,11 @@ Let's see where the cab-taking working New Yorkers are coming from and going to 
 
 ![GitHub Logo](images/nyc-taxi-morning-dropoff.png)
 
+### 5.2 Trips by Neighborhoods
+
 Below are queries that show the neighborhoods as pick-up or drop-off locations that are with the highest numbers of trips. Midtown, Upper East, Upper West, Gramercy, which are high social-economic well-off neighborhoods, dominate most of the trips. 
 
-### Top 10 Pickup Neighborhoods among all Trips
+#### Top 10 Pickup Neighborhoods among all Trips
 ```
           pickup_name             pickup_city    percent
 1             Midtown New York City-Manhattan 16.3299766
@@ -74,7 +76,7 @@ Below are queries that show the neighborhoods as pick-up or drop-off locations t
 10            Clinton New York City-Manhattan  2.8678539
 ```
 
-### Top 10 Dropoff Neighborhoods among all Trips
+#### Top 10 Dropoff Neighborhoods among all Trips
 ```
          dropoff_name            dropoff_city   percent
 1             Midtown New York City-Manhattan 14.941878
@@ -88,7 +90,7 @@ Below are queries that show the neighborhoods as pick-up or drop-off locations t
 9       East Village New York City-Manhattan  3.230951
 10            Clinton New York City-Manhattan  3.050306
 ```
-### Top 10 Pickup Neighborhoods among all Trips during Weekday Morning (5am-9am)
+#### Top 10 Pickup Neighborhoods among all Trips during Weekday Morning (5am-9am)
 ```
           pickup_name             pickup_city   percent
 1     Upper East Side New York City-Manhattan 2.5379341
@@ -102,7 +104,7 @@ Below are queries that show the neighborhoods as pick-up or drop-off locations t
 9            Clinton New York City-Manhattan 0.4821210
 10       East Village New York City-Manhattan 0.3057363
 ```
-### Top 10 Dropoff Neighborhoods among all Trips during Weekday Morning (5am-9am)
+#### Top 10 Dropoff Neighborhoods among all Trips during Weekday Morning (5am-9am)
 ```
           dropoff_name            dropoff_city   percent
 1              Midtown New York City-Manhattan 3.6419843
@@ -116,10 +118,12 @@ Below are queries that show the neighborhoods as pick-up or drop-off locations t
 9   Greenwich Village New York City-Manhattan 0.3678303
 10             Clinton New York City-Manhattan 0.3177420
 ```
+
+### 5.3 Pickups and Dropoffs near Subway Stations
+
 Do people take cab to subway stations? Yes, they do. And you probably would expect that more people that live *outside* Manhattan do so. However, the numbers show that most people who do so lives *in* Manhattan. Or another way to put this could be that people from these neighborhoods would rather take a taxi than take the subway. 
 
-
-### Top 10 Neighborhoods that Take Cab to Destinations near (half block from) Subway Entrances 
+#### Top 10 Neighborhoods that Take Cab to Destinations near (half block from) Subway Entrances 
 ```
                 pickup_name             pickup_city   num
 1           Upper East Side New York City-Manhattan 18564
@@ -136,16 +140,16 @@ Do people take cab to subway stations? Yes, they do. And you probably would expe
 
 And I map three neighborhoods (Upper East, Chelsea, and Astoria in Queens) that are with high numbers of such trips to show which subway entrances these people take cabs to. But keep in mind that some of them may just take cabs to the destinations that happen to be subway entrances. As shown by the map, it is more likely for people who live outside Manhattan to take a taxi trip to subway entrance to go to work. The comparison figure of all three neighborhoods show that it is general more likely for people living in Astoria to take a taxi to subway entrances in any given hours during the day.
 
-### Taxi Trips from Upper East to Subway Entrances on Weekdays during Morning (7-9 am)
+#### Taxi Trips from Upper East to Subway Entrances on Weekdays during Morning (7-9 am)
 ![GitHub Logo](images/Upper_East_to_subway_map.png)
 
-### Taxi Trips from Chelsea to Subway Entrances on Weekdays during Morning (7-9 am)
+#### Taxi Trips from Chelsea to Subway Entrances on Weekdays during Morning (7-9 am)
 ![GitHub Logo](images/Chelsea_to_subway_map.png)
 
-### Taxi Trips from Astoria, Queens to Subway Entrances on Weekdays during Morning (7-9 am)
+#### Taxi Trips from Astoria, Queens to Subway Entrances on Weekdays during Morning (7-9 am)
 ![GitHub Logo](images/Astoria_to_subway_map.png)
 
-### Top 10 Neighborhoods that Take Cab from Destinations near (half block from) Subway Entrances 
+#### Top 10 Neighborhoods that Take Cab from Destinations near (half block from) Subway Entrances 
 
 ```
                dropoff_name            dropoff_city   num
@@ -161,18 +165,19 @@ And I map three neighborhoods (Upper East, Chelsea, and Astoria in Queens) that 
 10                  Clinton New York City-Manhattan  5420
 ```
 
-### Taxi Trips from Subway Entrances to Upper East on Weekdays during Evening (5-7 pm)
+#### Taxi Trips from Subway Entrances to Upper East on Weekdays during Evening (5-7 pm)
 ![GitHub Logo](images/Upper_East_from_subway_map_leveled.png)
 
-### Taxi Trips from Subway Entrances to Chelsea on Weekdays during Evening (5-7 pm)
+#### Taxi Trips from Subway Entrances to Chelsea on Weekdays during Evening (5-7 pm)
 ![GitHub Logo](images/Chelsea_from_subway_map_leveled.png)
 
-### Taxi Trips from Subway Entrances to Astoria, Queens on Weekdays during Evening (5-7 pm)
+#### Taxi Trips from Subway Entrances to Astoria, Queens on Weekdays during Evening (5-7 pm)
 ![GitHub Logo](images/Astoria_from_subway_map_leveled.png)
 
 
 ![GitHub Logo](images/three_nbh_wday_to_subway_counts_plot.png)
 
+### 5.4 Airport Travellers and Where They Stay
 
 Airports! Monday sees the highest trips from three major airports near New York City (JFK, LGA, EWR). Thursday and Friday see the highest trips leaving the city. 
 
@@ -183,9 +188,9 @@ Most trips to airports begin from Midtown and Lower Manhattan. I caculated the m
 
 ![GitHub Logo](images/midtown_to_airport_plot.png)
 
-### A Sample of the Information from Neighborhood to Airport by Hours by Weekdays
+#### A Sample of the Information from Neighborhood to Airport by Hours by Weekdays
 
-#### From Midtown to EWR
+##### From Midtown to EWR
 
 ```   
 wday hour     time
@@ -219,7 +224,7 @@ Where do people stay in town when they come to NYC? The top three hotels that pe
 
 Trips from hotel to airport are a little more than the other way around. About 335 trips were made from hotels to airports. Top pickup locations are Marriott Eastside, W, and Milleseme. But still, much more trips were made from neighborhoods then hotels. The top neighborhoods as the pickup locations on Monday are Midtown (again, probably are the hotels), 473 trips, Upper East, Gramercy, Garment District, Upper West, Chelsea, and so on.
 
-### Top 10 Hotels People Go To From Airports 
+#### Top 10 Hotels People Go To From Airports 
 ```
                                                               value airports num
 1                                                         Ace Hotel      JFK  20
@@ -279,12 +284,12 @@ Trips from hotel to airport are a little more than the other way around. About 3
 9        Financial District    2  37  2.10706150
 10             East Village    2  32  1.82232346
 ```
-
+### 5.5 The Gourmets
 On Friday night, top neighborhoods as the pickup places to go to restaurants are Midtown, Gramercy, Upper East Side, Chelsea, and Upper West Side. The bar charts show trips to restaurants by hour on Wednesday and Friday. The patterns are similar except that that more people go to restaurants for dinner and leave later. The data also shows the top dropoff neighborhoods from restaurants. On weedays, top dropoff nieghborhoods are Midtown, Upper East, Upper West, Gramercy, Chelsea, etc., and in addition to these, East Village, Greenwich Village on weekends. 
 
 ![GitHub Logo](images/plot_trip_to_restaurant_WEDFRI.png)
 
-### Top 10 Pick-up Neighborhoods to Restaurants on Friday Night (5-8 pm)
+#### Top 10 Pick-up Neighborhoods to Restaurants on Friday Night (5-8 pm)
 ```
                 pickup_name  num
 1                   Midtown 2044
@@ -299,7 +304,7 @@ On Friday night, top neighborhoods as the pickup places to go to restaurants are
 10                  Clinton  396
 11             West Village  387
 ```
-### Top 10 Drop-off Neighborhoods from Restaurants on Friday Night (after 9 pm)
+#### Top 10 Drop-off Neighborhoods from Restaurants on Friday Night (after 9 pm)
 ```
                dropoff_name  num
 1                   Midtown 1171
@@ -321,10 +326,10 @@ Is it true that the city never sleep? Partially true. After comparing the number
 
 ![GitHub Logo](images/plot_trip_from_restaurants_wday_comparison.png)
 
-### Other ways to explore the data
+### 5.6 Other ways to explore the data
 Who are the riders that pay the highest tip? In general, people take a cab within Manhattan tip higher. High tippers tend to be those who go to Times Square and Midtown. They could be visitors or financial bankers. Besides, wealthy people living in Upper East seem to tip more as well.
 
 ![GitHub Logo](images/plot_high_tip2.png)
 
-# 7. Conclusion
+## 6. Conclusion
 This exciting data exploratory project targets the audiences who are interested in urban life and traffic movements, such as government agencies, businesses interested in consumer behaviors, and anyone who are interested in New York City commutes.  Audience may also find useful information for business and commercial activities--for example, enterprises finding locations for their businesses may find this report informative. With the data of New York cab service, this project tells multiple interesting stories about New Yorkers' commute. Combining with OpenStreetMap data, a lot more interesting questions can be answered. We not only know about the time and locations of people's movement with cabs, but we will also know what kind of activities people engaged in at their destinations.The mapping of the trips and descriptions of the destinations will show a series of stories about the daily life of New Yorkers.
